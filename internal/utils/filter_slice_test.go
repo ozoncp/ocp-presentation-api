@@ -6,82 +6,82 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type filterSliceInput struct {
+	one []string
+	two []string
+}
+
+type filterSliceOutput struct {
+	one []string
+}
+
+type filterSliceTestCase struct {
+	in  filterSliceInput
+	out filterSliceOutput
+}
+
+var filterSliceTestCases = []filterSliceTestCase{
+	{
+		in: filterSliceInput{
+			one: []string{},
+			two: []string{},
+		},
+		out: filterSliceOutput{
+			one: nil,
+		},
+	},
+	{
+		in: filterSliceInput{
+			one: []string{""},
+			two: []string{""},
+		},
+		out: filterSliceOutput{
+			one: nil,
+		},
+	},
+	{
+		in: filterSliceInput{
+			one: []string{"a", "b", "c", "d", "e"},
+			two: []string{"a", "b", "c", "d", "e"},
+		},
+		out: filterSliceOutput{
+			one: nil,
+		},
+	},
+	{
+		in: filterSliceInput{
+			one: []string{"a", "b", "c", "d", "e"},
+			two: nil,
+		},
+		out: filterSliceOutput{
+			one: []string{"a", "b", "c", "d", "e"},
+		},
+	},
+	{
+		in: filterSliceInput{
+			one: []string{"a", "b", "c", "d", "e"},
+			two: []string{"a", "c", "e"},
+		},
+		out: filterSliceOutput{
+			one: []string{"b", "d"},
+		},
+	},
+	{
+		in: filterSliceInput{
+			one: []string{"a", "a", "a", "b", "b"},
+			two: []string{"a"},
+		},
+		out: filterSliceOutput{
+			one: []string{"b", "b"},
+		},
+	},
+}
+
 func TestFilterSlice(t *testing.T) {
 	ast := assert.New(t)
 
-	type input struct {
-		one []string
-		two []string
-	}
-
-	type output struct {
-		one []string
-	}
-
-	type question struct {
-		in  input
-		out output
-	}
-
-	questions := []question{
-		{
-			in: input{
-				one: []string{},
-				two: []string{},
-			},
-			out: output{
-				one: nil,
-			},
-		},
-		{
-			in: input{
-				one: []string{""},
-				two: []string{""},
-			},
-			out: output{
-				one: nil,
-			},
-		},
-		{
-			in: input{
-				one: []string{"a", "b", "c", "d", "e"},
-				two: []string{"a", "b", "c", "d", "e"},
-			},
-			out: output{
-				one: nil,
-			},
-		},
-		{
-			in: input{
-				one: []string{"a", "b", "c", "d", "e"},
-				two: nil,
-			},
-			out: output{
-				one: []string{"a", "b", "c", "d", "e"},
-			},
-		},
-		{
-			in: input{
-				one: []string{"a", "b", "c", "d", "e"},
-				two: []string{"a", "c", "e"},
-			},
-			out: output{
-				one: []string{"b", "d"},
-			},
-		},
-		{
-			in: input{
-				one: []string{"a", "a", "a", "b", "b"},
-				two: []string{"a"},
-			},
-			out: output{
-				one: []string{"b", "b"},
-			},
-		},
-	}
-
-	for _, q := range questions {
-		out, in := q.out, q.in
+	for _, testCase := range filterSliceTestCases {
+		out, in := testCase.out, testCase.in
 		ast.Equal(out.one, FilterSlice(in.one, in.two), "Test Case: %v %v", in, out)
 	}
 }
