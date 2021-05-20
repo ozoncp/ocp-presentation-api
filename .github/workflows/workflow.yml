@@ -12,7 +12,7 @@ on:
       - '**.md'
 
 jobs:
-  test:
+  run:
     strategy:
       matrix:
         go-version: [1.15.x, 1.16.x]
@@ -27,10 +27,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # - name: golangci-lint
-    #   uses: golangci/golangci-lint-action@v2
-    #   with:
-    #     version: latest
+    - name: golangci-lint
+      # TODO: Fix on Windows
+      if:  runner.os == 'Linux' || runner.os == 'macOS'
+      uses: golangci/golangci-lint-action@v2
+      with:
+        version: latest
 
     - name: Test
       run: go test ./...
