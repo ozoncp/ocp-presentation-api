@@ -1,15 +1,21 @@
 package utils
 
-// FilterSlice filters a slice by the criterion of the absence of an element.
-func FilterSlice(slice []string, criterion []string) []string {
-	dict := make(map[string]interface{}, len(criterion))
-	for _, item := range criterion {
-		dict[item] = nil
+import "github.com/ozoncp/ocp-presentation-api/internal/models"
+
+// FilterSlice filters a slice by the criterion of the absence of keys.
+func FilterSlice(arr []models.Presentation, keys []models.Presentation) []models.Presentation {
+	if arr == nil || keys == nil {
+		return arr
 	}
 
-	var result []string
-	for _, item := range slice {
-		if _, found := dict[item]; !found {
+	dict := make(map[uint64]struct{}, len(keys))
+	for _, key := range keys {
+		dict[key.ID] = struct{}{}
+	}
+
+	var result []models.Presentation
+	for _, item := range arr {
+		if _, found := dict[item.ID]; !found {
 			result = append(result, item)
 		}
 	}

@@ -3,16 +3,17 @@ package utils
 import (
 	"testing"
 
+	"github.com/ozoncp/ocp-presentation-api/internal/models"
 	"github.com/stretchr/testify/assert"
 )
 
 type filterSliceInput struct {
-	one []string
-	two []string
+	one []models.Presentation
+	two []models.Presentation
 }
 
 type filterSliceOutput struct {
-	one []string
+	one []models.Presentation
 }
 
 type filterSliceTestCase struct {
@@ -23,56 +24,20 @@ type filterSliceTestCase struct {
 var filterSliceTestCases = []filterSliceTestCase{
 	{
 		in: filterSliceInput{
-			one: []string{},
-			two: []string{},
-		},
-		out: filterSliceOutput{
 			one: nil,
-		},
-	},
-	{
-		in: filterSliceInput{
-			one: []string{""},
-			two: []string{""},
-		},
-		out: filterSliceOutput{
-			one: nil,
-		},
-	},
-	{
-		in: filterSliceInput{
-			one: []string{"a", "b", "c", "d", "e"},
-			two: []string{"a", "b", "c", "d", "e"},
-		},
-		out: filterSliceOutput{
-			one: nil,
-		},
-	},
-	{
-		in: filterSliceInput{
-			one: []string{"a", "b", "c", "d", "e"},
 			two: nil,
 		},
 		out: filterSliceOutput{
-			one: []string{"a", "b", "c", "d", "e"},
+			one: nil,
 		},
 	},
 	{
 		in: filterSliceInput{
-			one: []string{"a", "b", "c", "d", "e"},
-			two: []string{"a", "c", "e"},
+			one: []models.Presentation{},
+			two: nil,
 		},
 		out: filterSliceOutput{
-			one: []string{"b", "d"},
-		},
-	},
-	{
-		in: filterSliceInput{
-			one: []string{"a", "a", "a", "b", "b"},
-			two: []string{"a"},
-		},
-		out: filterSliceOutput{
-			one: []string{"b", "b"},
+			one: []models.Presentation{},
 		},
 	},
 }
