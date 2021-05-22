@@ -15,7 +15,7 @@ func PresentationsToMap(presentations []models.Presentation) (map[uint64]models.
 	for i := range presentations {
 		id := presentations[i].ID
 		if _, found := result[id]; found {
-			return result, errors.New("identifiers are not unique")
+			return nil, errors.New("identifiers are not unique")
 		}
 		result[id] = presentations[i]
 	}

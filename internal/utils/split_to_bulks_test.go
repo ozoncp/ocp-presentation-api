@@ -31,6 +31,69 @@ var splitPresentationsToBulksTestCases = []splitPresentationsToBulksTestCase{
 			one: nil,
 		},
 	},
+	{
+		in: splitPresentationsToBulksInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: 1,
+		},
+		out: splitPresentationsToBulksOutput{
+			one: [][]models.Presentation{
+				{{ID: 1}},
+				{{ID: 2}},
+				{{ID: 3}},
+				{{ID: 4}},
+				{{ID: 5}},
+			},
+		},
+	},
+	{
+		in: splitPresentationsToBulksInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: 2,
+		},
+		out: splitPresentationsToBulksOutput{
+			one: [][]models.Presentation{
+				{{ID: 1}, {ID: 2}},
+				{{ID: 3}, {ID: 4}},
+				{{ID: 5}},
+			},
+		},
+	},
+	{
+		in: splitPresentationsToBulksInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: 3,
+		},
+		out: splitPresentationsToBulksOutput{
+			one: [][]models.Presentation{
+				{{ID: 1}, {ID: 2}, {ID: 3}},
+				{{ID: 4}, {ID: 5}},
+			},
+		},
+	},
+	{
+		in: splitPresentationsToBulksInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: 4,
+		},
+		out: splitPresentationsToBulksOutput{
+			one: [][]models.Presentation{
+				{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}},
+				{{ID: 5}},
+			},
+		},
+	},
+	{
+		in: splitPresentationsToBulksInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: 5,
+		},
+		out: splitPresentationsToBulksOutput{
+			one: [][]models.Presentation{
+				{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			},
+		},
+	},
 }
 
 func TestSplitPresentationsToBulks(t *testing.T) {
