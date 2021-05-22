@@ -40,6 +40,51 @@ var filterSliceTestCases = []filterSliceTestCase{
 			one: []models.Presentation{},
 		},
 	},
+	{
+		in: filterSliceInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []models.Presentation{{ID: 1}},
+		},
+		out: filterSliceOutput{
+			one: []models.Presentation{{ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+		},
+	},
+	{
+		in: filterSliceInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []models.Presentation{{ID: 1}, {ID: 2}},
+		},
+		out: filterSliceOutput{
+			one: []models.Presentation{{ID: 3}, {ID: 4}, {ID: 5}},
+		},
+	},
+	{
+		in: filterSliceInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}},
+		},
+		out: filterSliceOutput{
+			one: []models.Presentation{{ID: 4}, {ID: 5}},
+		},
+	},
+	{
+		in: filterSliceInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}},
+		},
+		out: filterSliceOutput{
+			one: []models.Presentation{{ID: 5}},
+		},
+	},
+	{
+		in: filterSliceInput{
+			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+		},
+		out: filterSliceOutput{
+			one: nil,
+		},
+	},
 }
 
 func TestFilterSlice(t *testing.T) {
