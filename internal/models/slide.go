@@ -12,10 +12,9 @@ const (
 
 // Slide
 type Slide struct {
-	ID             uint64    `json:"id,omitempty"`
-	PresentationID uint64    `json:"presentation_id,omitempty"`
-	Number         uint64    `json:"number,omitempty"`
-	Type           SlideType `json:"type,omitempty"`
+	ID     uint64    `json:"id,omitempty"`
+	Number uint64    `json:"number,omitempty"`
+	Type   SlideType `json:"type,omitempty"`
 }
 
 func (slideType SlideType) String() string {

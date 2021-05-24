@@ -1,0 +1,67 @@
+syntax = "proto3";
+package ocp.slide.api;
+
+import "google/api/annotations.proto";
+import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
+
+option go_package = "gihtub.com/ozoncp/ocp-presentation-api/pkg/ocp-slide-api";
+
+service SlideAPI {
+	// Returns a slide by id
+	rpc SlideV1(SlideV1Request) returns (SlideV1Response) {
+		option (google.api.http) = {
+			get: "/v1/slides/{slide_id}"
+		};
+	}
+
+	// Creates a new slide
+	rpc CreateSlideV1(CreateSlideV1Request) returns (CreateSlideV1Response) {
+		option (google.api.http) = {
+			post: "/v1/slides"
+		};
+	}
+
+	// Removes a slide by id
+	rpc RemoveSlideV1(RemoveSlideV1Request) returns (RemoveSlideV1Response) {
+		option (google.api.http) = {
+			delete: "/v1/slides/{slide_id}"
+		};
+	}
+}
+
+message SlideV1Request {
+	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
+}
+
+message SlideV1Response {
+	Slide slide = 1;
+}
+
+message CreateSlideV1Request {
+	uint64 number = 1 [(validate.rules).uint64.gt = 0];
+	SlideType type = 2;
+}
+
+message CreateSlideV1Response {
+	uint64 slide_id = 1;
+}
+
+message RemoveSlideV1Request {
+	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
+}
+
+message RemoveSlideV1Response {
+	bool found = 1;
+}
+
+enum SlideType {
+	Question = 1;
+	Video = 2;
+	Document = 3;
+}
+
+message Slide {
+	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
+	uint64 number = 2 [(validate.rules).uint64.gt = 0];
+	SlideType type = 3;
+}
