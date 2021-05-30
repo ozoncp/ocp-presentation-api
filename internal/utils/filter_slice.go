@@ -1,3 +1,4 @@
+// Package utils implement a simple internal library for Ozon Code Platform Presentation API.
 package utils
 
 import "github.com/ozoncp/ocp-presentation-api/internal/models"
