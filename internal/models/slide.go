@@ -1,30 +1,35 @@
+// Package models represent model data for Ozon Code Platform Presentation API.
 package models
 
 import "fmt"
 
-type SlideType int
+type ContentType uint8
 
 const (
-	Question SlideType = iota
-	Video
-	Document
+	TypeDocument ContentType = iota
+	TypeVideo
+	TypeQuestion
+	TypeTask
 )
 
-// Slide
+// Slide represents the connection between a presentation and a content
 type Slide struct {
-	ID     uint64    `json:"id,omitempty"`
-	Number uint64    `json:"number,omitempty"`
-	Type   SlideType `json:"type,omitempty"`
+	ID             uint64      `json:"id,omitempty"`
+	PresentationID uint64      `json:"presentation_id,omitempty"`
+	Number         uint64      `json:"number,omitempty"`
+	Type           ContentType `json:"type,omitempty"`
 }
 
-func (slideType SlideType) String() string {
-	switch slideType {
-	case Question:
-		return "Question"
-	case Video:
-		return "Video"
-	case Document:
+func (contentType ContentType) String() string {
+	switch contentType {
+	case TypeDocument:
 		return "Document"
+	case TypeVideo:
+		return "Video"
+	case TypeQuestion:
+		return "Question"
+	case TypeTask:
+		return "Task"
 	}
 	panic("invalid value")
 }
