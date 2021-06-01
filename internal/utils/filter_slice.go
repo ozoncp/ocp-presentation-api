@@ -1,10 +1,10 @@
 // Package utils implement a simple internal library for Ozon Code Platform Presentation API.
 package utils
 
-import "github.com/ozoncp/ocp-presentation-api/internal/models"
+import "github.com/ozoncp/ocp-presentation-api/internal/model"
 
 // FilterSlice filters a slice by the criterion of the absence of keys.
-func FilterSlice(arr []models.Presentation, keys []models.Presentation) []models.Presentation {
+func FilterSlice(arr []model.Presentation, keys []model.Presentation) []model.Presentation {
 	if arr == nil || keys == nil {
 		return arr
 	}
@@ -14,7 +14,7 @@ func FilterSlice(arr []models.Presentation, keys []models.Presentation) []models
 		dict[key.ID] = struct{}{}
 	}
 
-	var result []models.Presentation
+	var result []model.Presentation
 	for _, item := range arr {
 		if _, found := dict[item.ID]; !found {
 			result = append(result, item)

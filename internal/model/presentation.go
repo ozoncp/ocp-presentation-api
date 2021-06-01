@@ -1,5 +1,5 @@
-// Package models represent model data for Ozon Code Platform Presentation API.
-package models
+// Package model represents model data for Ozon Code Platform Presentation API.
+package model
 
 import "fmt"
 

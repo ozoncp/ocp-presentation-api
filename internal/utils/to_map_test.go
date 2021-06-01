@@ -5,16 +5,16 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ozoncp/ocp-presentation-api/internal/models"
+	"github.com/ozoncp/ocp-presentation-api/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 
 type presentationsToMapInput struct {
-	one []models.Presentation
+	one []model.Presentation
 }
 
 type presentationsToMapOutput struct {
-	one map[uint64]models.Presentation
+	one map[uint64]model.Presentation
 	two error
 }
 
@@ -35,16 +35,16 @@ var presentationsToMapTestCases = []presentationsToMapTestCase{
 	},
 	{
 		in: presentationsToMapInput{
-			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			one: []model.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
 		},
 		out: presentationsToMapOutput{
-			one: map[uint64]models.Presentation{1: {ID: 1}, 2: {ID: 2}, 3: {ID: 3}, 4: {ID: 4}, 5: {ID: 5}},
+			one: map[uint64]model.Presentation{1: {ID: 1}, 2: {ID: 2}, 3: {ID: 3}, 4: {ID: 4}, 5: {ID: 5}},
 			two: nil,
 		},
 	},
 	{
 		in: presentationsToMapInput{
-			one: []models.Presentation{{ID: 1}, {ID: 1}},
+			one: []model.Presentation{{ID: 1}, {ID: 1}},
 		},
 		out: presentationsToMapOutput{
 			one: nil,
