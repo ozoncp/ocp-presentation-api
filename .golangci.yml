@@ -9,6 +9,7 @@ run:
     - var
     - tmp
   skip-files:
+    - mockgen.go
     - \.pb\.go$
     - \.pb\.goclay\.go$
 

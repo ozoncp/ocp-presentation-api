@@ -4,15 +4,15 @@ package utils
 import (
 	"errors"
 
-	"github.com/ozoncp/ocp-presentation-api/internal/models"
+	"github.com/ozoncp/ocp-presentation-api/internal/model"
 )
 
-func PresentationsToMap(presentations []models.Presentation) (map[uint64]models.Presentation, error) {
+func PresentationsToMap(presentations []model.Presentation) (map[uint64]model.Presentation, error) {
 	if presentations == nil {
 		return nil, nil
 	}
 
-	result := make(map[uint64]models.Presentation, len(presentations))
+	result := make(map[uint64]model.Presentation, len(presentations))
 	for i := range presentations {
 		id := presentations[i].ID
 		if _, found := result[id]; found {

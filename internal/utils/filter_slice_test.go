@@ -4,17 +4,17 @@ package utils
 import (
 	"testing"
 
-	"github.com/ozoncp/ocp-presentation-api/internal/models"
+	"github.com/ozoncp/ocp-presentation-api/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 
 type filterSliceInput struct {
-	one []models.Presentation
-	two []models.Presentation
+	one []model.Presentation
+	two []model.Presentation
 }
 
 type filterSliceOutput struct {
-	one []models.Presentation
+	one []model.Presentation
 }
 
 type filterSliceTestCase struct {
@@ -34,53 +34,53 @@ var filterSliceTestCases = []filterSliceTestCase{
 	},
 	{
 		in: filterSliceInput{
-			one: []models.Presentation{},
+			one: []model.Presentation{},
 			two: nil,
 		},
 		out: filterSliceOutput{
-			one: []models.Presentation{},
+			one: []model.Presentation{},
 		},
 	},
 	{
 		in: filterSliceInput{
-			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
-			two: []models.Presentation{{ID: 1}},
+			one: []model.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []model.Presentation{{ID: 1}},
 		},
 		out: filterSliceOutput{
-			one: []models.Presentation{{ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			one: []model.Presentation{{ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
 		},
 	},
 	{
 		in: filterSliceInput{
-			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
-			two: []models.Presentation{{ID: 1}, {ID: 2}},
+			one: []model.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []model.Presentation{{ID: 1}, {ID: 2}},
 		},
 		out: filterSliceOutput{
-			one: []models.Presentation{{ID: 3}, {ID: 4}, {ID: 5}},
+			one: []model.Presentation{{ID: 3}, {ID: 4}, {ID: 5}},
 		},
 	},
 	{
 		in: filterSliceInput{
-			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
-			two: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}},
+			one: []model.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []model.Presentation{{ID: 1}, {ID: 2}, {ID: 3}},
 		},
 		out: filterSliceOutput{
-			one: []models.Presentation{{ID: 4}, {ID: 5}},
+			one: []model.Presentation{{ID: 4}, {ID: 5}},
 		},
 	},
 	{
 		in: filterSliceInput{
-			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
-			two: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}},
+			one: []model.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []model.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}},
 		},
 		out: filterSliceOutput{
-			one: []models.Presentation{{ID: 5}},
+			one: []model.Presentation{{ID: 5}},
 		},
 	},
 	{
 		in: filterSliceInput{
-			one: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
-			two: []models.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			one: []model.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
+			two: []model.Presentation{{ID: 1}, {ID: 2}, {ID: 3}, {ID: 4}, {ID: 5}},
 		},
 		out: filterSliceOutput{
 			one: nil,

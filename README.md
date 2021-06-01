@@ -1,4 +1,4 @@
 # Ozon Code Platform Presentation API
 [![Build & Test](https://github.com/ozoncp/ocp-presentation-api/actions/workflows/workflow.yml/badge.svg?branch=main)](https://github.com/ozoncp/ocp-presentation-api/actions/workflows/workflow.yml)
 
-Ozon Code Platform Presentation API is a service that manages data such as presentations and slides.
+Ozon Code Platform Presentation API is a service that provides API to access/manage Presentation and Slide entities.
