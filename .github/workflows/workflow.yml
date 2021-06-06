@@ -1,10 +1,7 @@
-name: Build & Test
+name: Tests
 
 on:
   push:
-    branches:
-      - main
-      - develop
     paths-ignore:
       - '**.md'
   pull_request:
@@ -12,7 +9,26 @@ on:
       - '**.md'
 
 jobs:
-  run:
+  lint:
+    strategy:
+      matrix:
+        go-version: [1.16.x]
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go-version }}
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Run linters
+      uses: golangci/golangci-lint-action@v2
+      with:
+        version: latest
+
+  test:
+    needs: lint
     strategy:
       matrix:
         go-version: [1.15.x, 1.16.x]
@@ -23,16 +39,41 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: ${{ matrix.go-version }}
-
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: golangci-lint
-      # TODO: Fix on Windows
-      if:  runner.os == 'Linux' || runner.os == 'macOS'
-      uses: golangci/golangci-lint-action@v2
-      with:
-        version: latest
-
     - name: Test
-      run: go test ./...
+      run: |
+        go env -w CGO_ENABLED=1
+        go test -race ./...
+
+  coverage:
+    needs: test
+    strategy:
+      matrix:
+        go-version: [1.16.x]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go-version }}
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Run coverage
+      run: |
+        go env -w CGO_ENABLED=1
+        go test -race -coverprofile="coverage.out" -covermode=atomic ./...
+        go tool cover -html="coverage.out" -o coverage.html
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.out
+        flags: unittests
+        name: codecov-umbrella
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: coverage.html

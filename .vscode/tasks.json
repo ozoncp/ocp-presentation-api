@@ -4,6 +4,28 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Install Requirements",
+            "type": "shell",
+            "command": "bash",
+            "windows": {
+                "command": "C:/Program Files/Git/bin/bash.exe"
+            },
+            "args": [
+                "-c",
+                "curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+            }
+        },
+        {
             "label": "Run linter",
             "type": "shell",
             "command": "bash",
@@ -31,7 +53,52 @@
             "command": "go",
             "args": [
                 "test",
+                "-race",
+                "-coverprofile=\"coverage.out\"",
+                "-covermode=atomic",
                 "./..."
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+            }
+        },
+        {
+            "label": "Generate the coverage report",
+            "type": "shell",
+            "command": "go",
+            "args": [
+                "tool",
+                "cover",
+                "-html=\"coverage.out\"",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+            },
+            "dependsOn": [
+                "Run all tests"
+            ]
+        },
+        {
+            "label": "Remove unused dependencies",
+            "type": "shell",
+            "command": "go",
+            "args": [
+                "mod",
+                "tidy"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
