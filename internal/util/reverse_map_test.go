@@ -1,5 +1,5 @@
-// Package utils implement a simple internal library for Ozon Code Platform Presentation API.
-package utils
+// Package util implement a simple internal library for Ozon Code Platform Presentation API.
+package util
 
 import (
 	"testing"
@@ -21,6 +21,14 @@ type reverseMapTestCase struct {
 }
 
 var reverseMapTestCases = []reverseMapTestCase{
+	{
+		in: reverseMapInput{
+			one: nil,
+		},
+		out: reverseMapOutput{
+			one: nil,
+		},
+	},
 	{
 		in: reverseMapInput{
 			one: map[string]string{},

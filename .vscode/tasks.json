@@ -26,6 +26,25 @@
             }
         },
         {
+            "label": "Download dependencies",
+            "type": "shell",
+            "command": "go",
+            "args": [
+                "mod",
+                "download"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+            }
+        },
+        {
             "label": "Run linter",
             "type": "shell",
             "command": "bash",

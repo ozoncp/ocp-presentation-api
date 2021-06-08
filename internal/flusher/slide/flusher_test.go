@@ -1,10 +1,11 @@
 package flusher_test
 
 import (
+	"context"
 	"errors"
 
 	flusher "github.com/ozoncp/ocp-presentation-api/internal/flusher/slide"
-	"github.com/ozoncp/ocp-presentation-api/internal/mock/slide/mock"
+	mock "github.com/ozoncp/ocp-presentation-api/internal/mock/slide"
 	"github.com/ozoncp/ocp-presentation-api/internal/model"
 
 	"github.com/golang/mock/gomock"
@@ -23,6 +24,7 @@ var _ = Describe("Flusher", func() {
 		err error
 
 		ctrl *gomock.Controller
+		ctx  context.Context
 
 		mockRepo *mock.MockRepo
 
@@ -36,45 +38,56 @@ var _ = Describe("Flusher", func() {
 
 	BeforeEach(func() {
 		ctrl = gomock.NewController(GinkgoT())
+		ctx = context.Background()
 
 		mockRepo = mock.NewMockRepo(ctrl)
 	})
 
 	JustBeforeEach(func() {
 		f = flusher.NewFlusher(chunkSize, mockRepo)
-		rest, err = f.Flush(slides)
+		rest, err = f.Flush(ctx, slides)
 	})
 
 	AfterEach(func() {
 		ctrl.Finish()
 	})
 
-	Context("repo saves all slides", func() {
+	Context("The parameter chunkSize is incorrect", func() {
+		BeforeEach(func() {
+			chunkSize = 0
+			slides = []model.Slide{{}, {}}
+		})
 
+		It("should incorrectly identify and return the error", func() {
+			Expect(err).Should(MatchError(flusher.ErrInvalidArgument))
+			Expect(rest).Should(BeNil())
+		})
+	})
+
+	Context("repo saves all slides", func() {
 		BeforeEach(func() {
 			chunkSize = 2
 			slides = []model.Slide{{}}
 
-			mockRepo.EXPECT().AddSlides(gomock.Any()).Return(nil).MinTimes(1)
+			mockRepo.EXPECT().AddSlides(ctx, gomock.Any()).Return(nil).MinTimes(1)
 		})
 
-		It("", func() {
+		It("should correctly identify and save all slides", func() {
 			Expect(err).Should(BeNil())
 			Expect(rest).Should(BeNil())
 		})
 	})
 
 	Context("repo does not save slides", func() {
-
 		BeforeEach(func() {
 			chunkSize = 2
 			slides = []model.Slide{{}, {}}
 
-			mockRepo.EXPECT().AddSlides(gomock.Len(int(chunkSize))).Return(errUnsupportedOperation)
+			mockRepo.EXPECT().AddSlides(ctx, gomock.Len(int(chunkSize))).Return(errUnsupportedOperation)
 		})
 
-		It("", func() {
-			// Expect(err).Should(BeNil())
+		It("should correctly identify and save the part of slides", func() {
+			Expect(err).Should(MatchError(errUnsupportedOperation))
 			Expect(rest).Should(BeEquivalentTo(slides))
 		})
 	})
@@ -91,13 +104,13 @@ var _ = Describe("Flusher", func() {
 			chunkSize = halfSize
 
 			gomock.InOrder(
-				mockRepo.EXPECT().AddSlides(gomock.Len(int(chunkSize))).Return(nil),
-				mockRepo.EXPECT().AddSlides(gomock.Any()).Return(errUnsupportedOperation),
+				mockRepo.EXPECT().AddSlides(ctx, gomock.Len(int(chunkSize))).Return(nil),
+				mockRepo.EXPECT().AddSlides(ctx, gomock.Any()).Return(errUnsupportedOperation),
 			)
 		})
 
-		It("", func() {
-			// Expect(err).Should(BeNil())
+		It("should correctly identify and save the part of slides", func() {
+			Expect(err).Should(MatchError(errUnsupportedOperation))
 			Expect(rest).Should(BeEquivalentTo(slides[halfSize:]))
 		})
 	})

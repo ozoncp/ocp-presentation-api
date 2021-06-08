@@ -1,5 +1,5 @@
-// Package utils implement a simple internal library for Ozon Code Platform Presentation API.
-package utils
+// Package util implement a simple internal library for Ozon Code Platform Presentation API.
+package util
 
 import (
 	"errors"
