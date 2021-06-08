@@ -2,17 +2,18 @@
 package flusher
 
 import (
+	"context"
 	"errors"
 
 	"github.com/ozoncp/ocp-presentation-api/internal/model"
 	repo "github.com/ozoncp/ocp-presentation-api/internal/repo/presentation"
 )
 
-var errInvalidArgument = errors.New("invalid argument")
+var ErrInvalidArgument = errors.New("invalid argument")
 
 // Flusher is the interface that wraps the basic Flush method.
 type Flusher interface {
-	Flush(presentations []model.Presentation) ([]model.Presentation, error)
+	Flush(ctx context.Context, presentations []model.Presentation) ([]model.Presentation, error)
 }
 
 type flusher struct {
@@ -29,9 +30,9 @@ func NewFlusher(chunkSize uint, repo repo.Repo) Flusher {
 }
 
 // Flush pushes presentations into the repository.
-func (f *flusher) Flush(presentations []model.Presentation) ([]model.Presentation, error) {
+func (f *flusher) Flush(ctx context.Context, presentations []model.Presentation) ([]model.Presentation, error) {
 	if f.chunkSize == 0 {
-		return nil, errInvalidArgument
+		return nil, ErrInvalidArgument
 	}
 
 	for i, n := uint(0), uint(len(presentations)); i < n; i += f.chunkSize {
@@ -39,7 +40,7 @@ func (f *flusher) Flush(presentations []model.Presentation) ([]model.Presentatio
 		if end > n {
 			end = n
 		}
-		if err := f.repo.AddPresentations(presentations[i:end]); err != nil {
+		if err := f.repo.AddPresentations(ctx, presentations[i:end]); err != nil {
 			return presentations[i:], err
 		}
 	}

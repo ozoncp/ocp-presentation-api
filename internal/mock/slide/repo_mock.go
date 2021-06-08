@@ -5,6 +5,7 @@
 package mock
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -35,59 +36,59 @@ func (m *MockRepo) EXPECT() *MockRepoMockRecorder {
 }
 
 // AddSlide mocks base method.
-func (m *MockRepo) AddSlide(arg0 *model.Slide) (uint64, error) {
+func (m *MockRepo) AddSlide(arg0 context.Context, arg1 *model.Slide) (uint64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddSlide", arg0)
+	ret := m.ctrl.Call(m, "AddSlide", arg0, arg1)
 	ret0, _ := ret[0].(uint64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // AddSlide indicates an expected call of AddSlide.
-func (mr *MockRepoMockRecorder) AddSlide(arg0 interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) AddSlide(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddSlide", reflect.TypeOf((*MockRepo)(nil).AddSlide), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddSlide", reflect.TypeOf((*MockRepo)(nil).AddSlide), arg0, arg1)
 }
 
 // AddSlides mocks base method.
-func (m *MockRepo) AddSlides(arg0 []model.Slide) error {
+func (m *MockRepo) AddSlides(arg0 context.Context, arg1 []model.Slide) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddSlides", arg0)
+	ret := m.ctrl.Call(m, "AddSlides", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // AddSlides indicates an expected call of AddSlides.
-func (mr *MockRepoMockRecorder) AddSlides(arg0 interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) AddSlides(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddSlides", reflect.TypeOf((*MockRepo)(nil).AddSlides), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddSlides", reflect.TypeOf((*MockRepo)(nil).AddSlides), arg0, arg1)
 }
 
 // GetSlide mocks base method.
-func (m *MockRepo) GetSlide(arg0 uint64) (*model.Slide, error) {
+func (m *MockRepo) GetSlide(arg0 context.Context, arg1 uint64) (*model.Slide, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSlide", arg0)
+	ret := m.ctrl.Call(m, "GetSlide", arg0, arg1)
 	ret0, _ := ret[0].(*model.Slide)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetSlide indicates an expected call of GetSlide.
-func (mr *MockRepoMockRecorder) GetSlide(arg0 interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) GetSlide(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSlide", reflect.TypeOf((*MockRepo)(nil).GetSlide), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSlide", reflect.TypeOf((*MockRepo)(nil).GetSlide), arg0, arg1)
 }
 
 // RemoveSlide mocks base method.
-func (m *MockRepo) RemoveSlide(arg0 uint64) error {
+func (m *MockRepo) RemoveSlide(arg0 context.Context, arg1 uint64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RemoveSlide", arg0)
+	ret := m.ctrl.Call(m, "RemoveSlide", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // RemoveSlide indicates an expected call of RemoveSlide.
-func (mr *MockRepoMockRecorder) RemoveSlide(arg0 interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) RemoveSlide(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveSlide", reflect.TypeOf((*MockRepo)(nil).RemoveSlide), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveSlide", reflect.TypeOf((*MockRepo)(nil).RemoveSlide), arg0, arg1)
 }

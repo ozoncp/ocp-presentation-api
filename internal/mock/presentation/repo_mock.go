@@ -5,6 +5,7 @@
 package mock
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -35,59 +36,59 @@ func (m *MockRepo) EXPECT() *MockRepoMockRecorder {
 }
 
 // AddPresentation mocks base method.
-func (m *MockRepo) AddPresentation(arg0 *model.Presentation) (uint64, error) {
+func (m *MockRepo) AddPresentation(arg0 context.Context, arg1 *model.Presentation) (uint64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddPresentation", arg0)
+	ret := m.ctrl.Call(m, "AddPresentation", arg0, arg1)
 	ret0, _ := ret[0].(uint64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // AddPresentation indicates an expected call of AddPresentation.
-func (mr *MockRepoMockRecorder) AddPresentation(arg0 interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) AddPresentation(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPresentation", reflect.TypeOf((*MockRepo)(nil).AddPresentation), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPresentation", reflect.TypeOf((*MockRepo)(nil).AddPresentation), arg0, arg1)
 }
 
 // AddPresentations mocks base method.
-func (m *MockRepo) AddPresentations(arg0 []model.Presentation) error {
+func (m *MockRepo) AddPresentations(arg0 context.Context, arg1 []model.Presentation) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddPresentations", arg0)
+	ret := m.ctrl.Call(m, "AddPresentations", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // AddPresentations indicates an expected call of AddPresentations.
-func (mr *MockRepoMockRecorder) AddPresentations(arg0 interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) AddPresentations(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPresentations", reflect.TypeOf((*MockRepo)(nil).AddPresentations), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPresentations", reflect.TypeOf((*MockRepo)(nil).AddPresentations), arg0, arg1)
 }
 
 // GetPresentation mocks base method.
-func (m *MockRepo) GetPresentation(arg0 uint64) (*model.Presentation, error) {
+func (m *MockRepo) GetPresentation(arg0 context.Context, arg1 uint64) (*model.Presentation, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPresentation", arg0)
+	ret := m.ctrl.Call(m, "GetPresentation", arg0, arg1)
 	ret0, _ := ret[0].(*model.Presentation)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetPresentation indicates an expected call of GetPresentation.
-func (mr *MockRepoMockRecorder) GetPresentation(arg0 interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) GetPresentation(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPresentation", reflect.TypeOf((*MockRepo)(nil).GetPresentation), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPresentation", reflect.TypeOf((*MockRepo)(nil).GetPresentation), arg0, arg1)
 }
 
 // RemovePresentation mocks base method.
-func (m *MockRepo) RemovePresentation(arg0 uint64) error {
+func (m *MockRepo) RemovePresentation(arg0 context.Context, arg1 uint64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RemovePresentation", arg0)
+	ret := m.ctrl.Call(m, "RemovePresentation", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // RemovePresentation indicates an expected call of RemovePresentation.
-func (mr *MockRepoMockRecorder) RemovePresentation(arg0 interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) RemovePresentation(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemovePresentation", reflect.TypeOf((*MockRepo)(nil).RemovePresentation), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemovePresentation", reflect.TypeOf((*MockRepo)(nil).RemovePresentation), arg0, arg1)
 }

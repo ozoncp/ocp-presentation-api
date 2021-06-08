@@ -1,12 +1,16 @@
 // Package repo saves data into the database.
 package repo
 
-import "github.com/ozoncp/ocp-presentation-api/internal/model"
+import (
+	"context"
+
+	"github.com/ozoncp/ocp-presentation-api/internal/model"
+)
 
 // Repo is the interface that wraps the basic methods of the database.
 type Repo interface {
-	AddPresentation(presentation *model.Presentation) (uint64, error)
-	AddPresentations(presentations []model.Presentation) error
-	RemovePresentation(presentationID uint64) error
-	GetPresentation(presentationID uint64) (*model.Presentation, error)
+	AddPresentation(ctx context.Context, presentation *model.Presentation) (uint64, error)
+	AddPresentations(ctx context.Context, presentations []model.Presentation) error
+	RemovePresentation(ctx context.Context, presentationID uint64) error
+	GetPresentation(ctx context.Context, presentationID uint64) (*model.Presentation, error)
 }
