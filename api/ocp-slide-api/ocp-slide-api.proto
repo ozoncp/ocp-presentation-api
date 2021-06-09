@@ -7,17 +7,24 @@ import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
 option go_package = "gihtub.com/ozoncp/ocp-presentation-api/pkg/ocp-slide-api";
 
 service SlideAPI {
+	// Creates a new slide
+	rpc CreateSlideV1(CreateSlideV1Request) returns (CreateSlideV1Response) {
+		option (google.api.http) = {
+			post: "/v1/slides"
+		};
+	}
+
 	// Returns a slide by id
-	rpc SlideV1(SlideV1Request) returns (SlideV1Response) {
+	rpc DescribeSlideV1(DescribeSlideV1Request) returns (DescribeSlideV1Response) {
 		option (google.api.http) = {
 			get: "/v1/slides/{slide_id}"
 		};
 	}
 
-	// Creates a new slide
-	rpc CreateSlideV1(CreateSlideV1Request) returns (CreateSlideV1Response) {
+	// Returns a list of slides
+	rpc ListSlidesV1(ListSlidesV1Request) returns (ListSlidesV1Response) {
 		option (google.api.http) = {
-			post: "/v1/slides"
+			get: "/v1/slides"
 		};
 	}
 
@@ -29,22 +36,40 @@ service SlideAPI {
 	}
 }
 
-message SlideV1Request {
-	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
-}
-
-message SlideV1Response {
-	Slide slide = 1;
-}
+///////////////////////////////////////////////////////////////////////////////
 
 message CreateSlideV1Request {
-	uint64 number = 1 [(validate.rules).uint64.gt = 0];
-	SlideType type = 2;
+	uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
+	uint64 number = 2 [(validate.rules).uint64.gt = 0];
+	SlideType type = 3;
 }
 
 message CreateSlideV1Response {
 	uint64 slide_id = 1;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+message DescribeSlideV1Request {
+	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
+}
+
+message DescribeSlideV1Response {
+	Slide slide = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+message ListSlidesV1Request {
+	uint64 limit = 1;
+	uint64 offset = 2;
+}
+
+message ListSlidesV1Response {
+	repeated Slide slides = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 message RemoveSlideV1Request {
 	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
@@ -54,14 +79,18 @@ message RemoveSlideV1Response {
 	bool found = 1;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 enum SlideType {
-	Question = 1;
-	Video = 2;
-	Document = 3;
+	Question = 0;
+	Video = 1;
+	Document = 2;
+	Task = 3;
 }
 
 message Slide {
 	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
-	uint64 number = 2 [(validate.rules).uint64.gt = 0];
-	SlideType type = 3;
+	uint64 presentation_id = 2 [(validate.rules).uint64.gt = 0];
+	uint64 number = 3 [(validate.rules).uint64.gt = 0];
+	SlideType type = 4;
 }

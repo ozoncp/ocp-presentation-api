@@ -1,12 +1,10 @@
 FROM golang:latest AS builder
 
-COPY . /src
-WORKDIR /src
-RUN go mod download
-RUN go build -o /out/ocp-presentation-api ./cmd/ocp-presentation-api
+COPY . /ocp-presentation-api
+WORKDIR /ocp-presentation-api
+RUN make requirements && make dependencies && make build
 
 FROM alpine:latest
 
-COPY --from=builder /out/ocp-presentation-api /ocp-presentation-api
-EXPOSE 8080
+COPY --from=builder /ocp-presentation-api/bin/ocp-presentation-api /ocp-presentation-api
 CMD ["/ocp-presentation-api"]
