@@ -5,9 +5,11 @@ run:
   tests: true
   skip-dirs:
     - bin
-    - vendor
-    - var
+    - pkg
     - tmp
+    - var
+    - vendor
+    - vendor.protogen
   skip-files:
     - mockgen.go
     - \.pb\.go$

@@ -7,17 +7,24 @@ import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
 option go_package = "gihtub.com/ozoncp/ocp-presentation-api/pkg/ocp-presentation-api";
 
 service PresentationAPI {
+	// Creates a new presentation
+	rpc CreatePresentationV1(CreatePresentationV1Request) returns (CreatePresentationV1Response) {
+		option (google.api.http) = {
+			post: "/v1/presentations"
+		};
+	}
+
 	// Returns a presentation by id
-	rpc PresentationV1(PresentationV1Request) returns (PresentationV1Response) {
+	rpc DescribePresentationV1(DescribePresentationV1Request) returns (DescribePresentationV1Response) {
 		option (google.api.http) = {
 			get: "/v1/presentations/{presentation_id}"
 		};
 	}
 
-	// Creates a new presentation
-	rpc CreatePresentationV1(CreatePresentationV1Request) returns (CreatePresentationV1Response) {
+	// Returns a list of presentations
+	rpc ListPresentationsV1(ListPresentationsV1Request) returns (ListPresentationsV1Response) {
 		option (google.api.http) = {
-			post: "/v1/presentations"
+			get: "/v1/presentations"
 		};
 	}
 
@@ -29,25 +36,41 @@ service PresentationAPI {
 	}
 }
 
-message PresentationV1Request {
-	uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
-}
-
-message PresentationV1Response {
-	Presentation presentation = 1;
-}
+///////////////////////////////////////////////////////////////////////////////
 
 message CreatePresentationV1Request {
 	uint64 user_id = 1 [(validate.rules).uint64.gt = 0];
 	uint64 lesson_id = 2 [(validate.rules).uint64.gt = 0];
 	string name = 3;
 	string description = 4;
-	repeated uint64 slide_id = 6 [(validate.rules).uint64.gt = 0];
 }
 
 message CreatePresentationV1Response {
 	uint64 presentation_id = 1;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+message DescribePresentationV1Request {
+	uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
+}
+
+message DescribePresentationV1Response {
+	Presentation presentation = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+message ListPresentationsV1Request {
+	uint64 limit = 1;
+	uint64 offset = 2;
+}
+
+message ListPresentationsV1Response {
+	repeated Presentation presentations = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 message RemovePresentationV1Request {
 	uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
@@ -57,11 +80,12 @@ message RemovePresentationV1Response {
 	bool found = 1;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 message Presentation {
-    uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
-	uint64 user_id = 1 [(validate.rules).uint64.gt = 0];
-	uint64 lesson_id = 2 [(validate.rules).uint64.gt = 0];
-	string name = 3;
-	string description = 4;
-	repeated uint64 slide_id = 6 [(validate.rules).uint64.gt = 0];
+	uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
+	uint64 user_id = 2 [(validate.rules).uint64.gt = 0];
+	uint64 lesson_id = 3 [(validate.rules).uint64.gt = 0];
+	string name = 4;
+	string description = 5;
 }
