@@ -1,0 +1,415 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "api/ocp-presentation-api/ocp-presentation-api.proto",
+    "version": "version not set"
+  },
+  "paths": {
+    "/v1/presentations": {
+      "get": {
+        "tags": [
+          "PresentationAPI"
+        ],
+        "summary": "Returns a list of presentations",
+        "operationId": "PresentationAPI_ListPresentationsV1",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListPresentationsV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "PresentationAPI"
+        ],
+        "summary": "Creates a new presentation",
+        "operationId": "PresentationAPI_CreatePresentationV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCreatePresentationV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      }
+    },
+    "/v1/presentations/{presentation_id}": {
+      "get": {
+        "tags": [
+          "PresentationAPI"
+        ],
+        "summary": "Returns a presentation by id",
+        "operationId": "PresentationAPI_DescribePresentationV1",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "presentation_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDescribePresentationV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "PresentationAPI"
+        ],
+        "summary": "Removes a presentation by id",
+        "operationId": "PresentationAPI_RemovePresentationV1",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "presentation_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiRemovePresentationV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      }
+    },
+    "/v1/slides": {
+      "get": {
+        "tags": [
+          "SlideAPI"
+        ],
+        "summary": "Returns a list of slides",
+        "operationId": "SlideAPI_ListSlidesV1",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListSlidesV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "SlideAPI"
+        ],
+        "summary": "Creates a new slide",
+        "operationId": "SlideAPI_CreateSlideV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCreateSlideV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      }
+    },
+    "/v1/slides/{slide_id}": {
+      "get": {
+        "tags": [
+          "SlideAPI"
+        ],
+        "summary": "Returns a slide by id",
+        "operationId": "SlideAPI_DescribeSlideV1",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "slide_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDescribeSlideV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SlideAPI"
+        ],
+        "summary": "Removes a slide by id",
+        "operationId": "SlideAPI_RemoveSlideV1",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "slide_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiRemoveSlideV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "apiCreatePresentationV1Response": {
+      "type": "object",
+      "properties": {
+        "presentation_id": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "apiCreateSlideV1Response": {
+      "type": "object",
+      "properties": {
+        "slide_id": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "apiDescribePresentationV1Response": {
+      "type": "object",
+      "properties": {
+        "presentation": {
+          "$ref": "#/definitions/apiPresentation"
+        }
+      }
+    },
+    "apiDescribeSlideV1Response": {
+      "type": "object",
+      "properties": {
+        "slide": {
+          "$ref": "#/definitions/apiSlide"
+        }
+      }
+    },
+    "apiListPresentationsV1Response": {
+      "type": "object",
+      "properties": {
+        "presentations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiPresentation"
+          }
+        }
+      }
+    },
+    "apiListSlidesV1Response": {
+      "type": "object",
+      "properties": {
+        "slides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiSlide"
+          }
+        }
+      }
+    },
+    "apiPresentation": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "lesson_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "presentation_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "apiRemovePresentationV1Response": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "boolean"
+        }
+      }
+    },
+    "apiRemoveSlideV1Response": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "boolean"
+        }
+      }
+    },
+    "apiSlide": {
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "presentation_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "slide_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "type": {
+          "$ref": "#/definitions/apiSlideType"
+        }
+      }
+    },
+    "apiSlideType": {
+      "type": "string",
+      "default": "Question",
+      "enum": [
+        "Question",
+        "Video",
+        "Document",
+        "Task"
+      ]
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        },
+        "error": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

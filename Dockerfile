@@ -2,7 +2,7 @@ FROM golang:latest AS builder
 
 COPY . /ocp-presentation-api
 WORKDIR /ocp-presentation-api
-RUN make requirements && make dependencies && make build
+RUN make all
 
 FROM alpine:latest
 
