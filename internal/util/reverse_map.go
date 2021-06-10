@@ -1,4 +1,4 @@
-// Package util implement a simple internal library for Ozon Code Platform Presentation API.
+// Package util implements a simple internal library for Ozon Code Platform Presentation API.
 package util
 
 // ReverseMap inverts the order of items
