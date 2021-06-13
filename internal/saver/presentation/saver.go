@@ -63,9 +63,9 @@ func (s *saver) flushing(ctx context.Context) {
 			presentations = append(presentations, presentation)
 
 		case <-ctx.Done():
-			defer close(s.done)
 			_, _ = s.flusher.Flush(ctx, presentations)
 			s.done <- struct{}{}
+			close(s.done)
 			return
 
 		case <-alarms:

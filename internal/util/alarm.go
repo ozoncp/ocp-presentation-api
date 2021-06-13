@@ -47,9 +47,9 @@ func (a *alarm) Init() {
 				a.alarms <- struct{}{}
 				timer = time.After(a.timeout)
 			case <-a.ctx.Done():
-				defer close(a.alarms)
-				defer close(a.done)
 				a.done <- struct{}{}
+				close(a.alarms)
+				close(a.done)
 				return
 			}
 		}

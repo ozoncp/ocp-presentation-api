@@ -10,6 +10,7 @@ import (
 	desc "github.com/ozoncp/ocp-presentation-api/pkg/ocp-presentation-api"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -26,11 +27,13 @@ func runGrpc() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer()
-	desc.RegisterPresentationAPIServer(s, api.NewPresentationAPI())
+	server := grpc.NewServer()
+	reflection.Register(server)
+
+	desc.RegisterPresentationAPIServer(server, api.NewPresentationAPI())
 
 	fmt.Printf("Server listening on %s\n", *grpcEndpoint)
-	if err := s.Serve(listen); err != nil {
+	if err := server.Serve(listen); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
@@ -38,5 +41,5 @@ func runGrpc() {
 func main() {
 	flag.Parse()
 
-	go runGrpc()
+	runGrpc()
 }

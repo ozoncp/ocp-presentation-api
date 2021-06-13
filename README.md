@@ -14,8 +14,24 @@ make generate
 ```
 
 ## [swagger-ui](https://editor.swagger.io/)
+## [Local swagger-ui](http://localhost:80/swagger)
 
+### Download
 ```sh
 docker pull swaggerapi/swagger-ui
-docker run -p 80:8080 -e BASE_URL=/swagger -e SWAGGER_JSON=/swagger/api.swagger.json -v `pwd`/swagger:/swagger  swaggerapi/swagger-ui
+```
+### Run
+on Unix
+```sh
+docker run -d -p 80:8080 -e BASE_URL=/swagger -e SWAGGER_JSON=/swagger/api.swagger.json -v `pwd`/swagger:/swagger swaggerapi/swagger-ui
+```
+On Windows
+
+```cmd
+docker run -d -p 80:8080 -e BASE_URL=/swagger -e SWAGGER_JSON=/swagger/api.swagger.json -v %cd%/swagger:/swagger swaggerapi/swagger-ui
+```
+
+## grpcui
+```sh
+grpcui -proto ./api/ocp-presentation-api/ocp-presentation-api.proto -import-path ./vendor.protogen -plaintext -open-browser localhost:7002
 ```
