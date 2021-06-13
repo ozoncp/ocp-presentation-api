@@ -67,7 +67,6 @@ dependencies:
 		go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 		go get -u google.golang.org/protobuf/runtime/protoimpl
 		go get -u google.golang.org/protobuf/types/known/anypb
-		go get -u google.golang.org/protobuf/types/known/anypb
 
 		go mod download
 
@@ -76,7 +75,7 @@ dependencies:
 		go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 		go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
-PHONY: vendor-proto
+.PHONY: vendor-proto
 vendor-proto:
 		mkdir -p vendor.protogen/api/ocp-presentation-api
 		mkdir -p vendor.protogen/api/ocp-slide-api
@@ -96,6 +95,11 @@ vendor-proto:
 			git clone https://github.com/envoyproxy/protoc-gen-validate vendor.protogen/github.com/envoyproxy/protoc-gen-validate ;\
 		fi
 
+.PHONY: coverage
+coverage:
+	go test -race -coverprofile="coverage.out" -covermode=atomic ./...
+	go tool cover -html="coverage.out"
+
 .PHONY: clean
 clean:
 		rm -rf bin pkg swagger vendor.protogen
@@ -103,3 +107,11 @@ clean:
 .PHONY: tidy
 tidy:
 		go mod tidy
+
+.PHONY: lint
+lint:
+		golangci-lint run
+
+.PHONY: grpcui
+grpcui:
+		grpcui -proto ./api/ocp-presentation-api/ocp-presentation-api.proto -import-path ./vendor.protogen -plaintext -open-browser localhost:7002
