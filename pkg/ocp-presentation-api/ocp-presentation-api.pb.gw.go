@@ -436,13 +436,13 @@ func RegisterPresentationAPIHandlerClient(ctx context.Context, mux *runtime.Serv
 }
 
 var (
-	pattern_PresentationAPI_CreatePresentationV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "presentations"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PresentationAPI_CreatePresentationV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "presentation"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_PresentationAPI_DescribePresentationV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "presentations", "presentation_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PresentationAPI_DescribePresentationV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "presentation", "presentation_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_PresentationAPI_ListPresentationsV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "presentations"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_PresentationAPI_RemovePresentationV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "presentations", "presentation_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_PresentationAPI_RemovePresentationV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "presentation", "presentation_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

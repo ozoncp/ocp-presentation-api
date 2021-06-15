@@ -14,10 +14,10 @@ const (
 
 // Slide represents the connection between a presentation and a content
 type Slide struct {
-	ID             uint64      `json:"id,omitempty"`
-	PresentationID uint64      `json:"presentation_id,omitempty"`
-	Number         uint64      `json:"number,omitempty"`
-	Type           ContentType `json:"type,omitempty"`
+	ID             uint64      `db:"id"`
+	PresentationID uint64      `db:"presentation_id"`
+	Number         uint64      `db:"number"`
+	Type           ContentType `db:"type"`
 }
 
 func (contentType ContentType) String() string {

@@ -11,44 +11,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/presentations": {
-      "get": {
-        "summary": "Returns a list of presentations",
-        "operationId": "PresentationAPI_ListPresentationsV1",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/apiListPresentationsV1Response"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/runtimeError"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          }
-        ],
-        "tags": [
-          "PresentationAPI"
-        ]
-      },
+    "/v1/presentation": {
       "post": {
         "summary": "Creates a new presentation",
         "operationId": "PresentationAPI_CreatePresentationV1",
@@ -71,7 +34,7 @@
         ]
       }
     },
-    "/v1/presentations/{presentation_id}": {
+    "/v1/presentation/{presentation_id}": {
       "get": {
         "summary": "Returns a presentation by id",
         "operationId": "PresentationAPI_DescribePresentationV1",
@@ -132,6 +95,45 @@
           "PresentationAPI"
         ]
       }
+    },
+    "/v1/presentations": {
+      "get": {
+        "summary": "Returns a list of presentations",
+        "operationId": "PresentationAPI_ListPresentationsV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListPresentationsV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "PresentationAPI"
+        ]
+      }
     }
   },
   "definitions": {
@@ -166,7 +168,7 @@
     "apiPresentation": {
       "type": "object",
       "properties": {
-        "presentation_id": {
+        "id": {
           "type": "string",
           "format": "uint64"
         },

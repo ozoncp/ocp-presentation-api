@@ -35,15 +35,16 @@ func (f *flusher) Flush(ctx context.Context, presentations []model.Presentation)
 		return nil, ErrInvalidArgument
 	}
 
-	for i, n := uint(0), uint(len(presentations)); i < n; i += f.chunkSize {
-		end := i + f.chunkSize
-		if end > n {
-			end = n
-		}
-		if err := f.repo.AddPresentations(ctx, presentations[i:end]); err != nil {
-			return presentations[i:], err
-		}
-	}
+	// TODO:
+	// for i, n := uint(0), uint(len(presentations)); i < n; i += f.chunkSize {
+	// 	end := i + f.chunkSize
+	// 	if end > n {
+	// 		end = n
+	// 	}
+	// 	if err := f.repo.AddPresentations(ctx, presentations[i:end]); err != nil {
+	// 		return presentations[i:], err
+	// 	}
+	// }
 
 	return nil, nil
 }

@@ -2,7 +2,6 @@ package flusher_test
 
 import (
 	"context"
-	"errors"
 
 	flusher "github.com/ozoncp/ocp-presentation-api/internal/flusher/presentation"
 	mock "github.com/ozoncp/ocp-presentation-api/internal/mock/presentation"
@@ -12,10 +11,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-)
-
-var (
-	errUnsupportedOperation = errors.New("not implemented yet")
 )
 
 var _ = Describe("Flusher", func() {
@@ -63,51 +58,51 @@ var _ = Describe("Flusher", func() {
 		})
 	})
 
-	Context("repo saves all presentations", func() {
-		BeforeEach(func() {
-			chunkSize = 2
-			presentations = []model.Presentation{{}}
+	// Context("repo saves all presentations", func() {
+	// 	BeforeEach(func() {
+	// 		chunkSize = 2
+	// 		presentations = []model.Presentation{{}}
 
-			mockRepo.EXPECT().AddPresentations(ctx, gomock.Any()).Return(nil).MinTimes(1)
-		})
+	// 		mockRepo.EXPECT().AddPresentations(ctx, gomock.Any()).Return(nil).MinTimes(1)
+	// 	})
 
-		It("should correctly identify and save all presentations", func() {
-			Expect(err).Should(BeNil())
-			Expect(rest).Should(BeNil())
-		})
-	})
+	// 	It("should correctly identify and save all presentations", func() {
+	// 		Expect(err).Should(BeNil())
+	// 		Expect(rest).Should(BeNil())
+	// 	})
+	// })
 
-	Context("repo does not save presentations", func() {
-		BeforeEach(func() {
-			chunkSize = 2
-			presentations = []model.Presentation{{}, {}}
+	// Context("repo does not save presentations", func() {
+	// 	BeforeEach(func() {
+	// 		chunkSize = 2
+	// 		presentations = []model.Presentation{{}, {}}
 
-			mockRepo.EXPECT().AddPresentations(ctx, gomock.Len(int(chunkSize))).Return(errUnsupportedOperation)
-		})
+	// 		mockRepo.EXPECT().AddPresentations(ctx, gomock.Len(int(chunkSize))).Return(errUnsupportedOperation)
+	// 	})
 
-		It("should correctly identify and save the part of presentations", func() {
-			Expect(err).Should(MatchError(errUnsupportedOperation))
-			Expect(rest).Should(BeEquivalentTo(presentations))
-		})
-	})
+	// 	It("should correctly identify and save the part of presentations", func() {
+	// 		Expect(err).Should(MatchError(errUnsupportedOperation))
+	// 		Expect(rest).Should(BeEquivalentTo(presentations))
+	// 	})
+	// })
 
-	Context("repo saves half presentations", func() {
-		var halfSize uint
+	// Context("repo saves half presentations", func() {
+	// 	var halfSize uint
 
-		BeforeEach(func() {
-			presentations = []model.Presentation{{}, {}}
-			halfSize = uint(len(presentations) / 2)
-			chunkSize = halfSize
+	// 	BeforeEach(func() {
+	// 		presentations = []model.Presentation{{}, {}}
+	// 		halfSize = uint(len(presentations) / 2)
+	// 		chunkSize = halfSize
 
-			gomock.InOrder(
-				mockRepo.EXPECT().AddPresentations(ctx, gomock.Len(int(chunkSize))).Return(nil),
-				mockRepo.EXPECT().AddPresentations(ctx, gomock.Any()).Return(errUnsupportedOperation),
-			)
-		})
+	// 		gomock.InOrder(
+	// 			mockRepo.EXPECT().AddPresentation(ctx, gomock.Len(int(chunkSize))).Return(nil),
+	// 			mockRepo.EXPECT().AddPresentation(ctx, gomock.Any()).Return(errUnsupportedOperation),
+	// 		)
+	// 	})
 
-		It("should correctly identify and save the part of presentations", func() {
-			Expect(err).Should(MatchError(errUnsupportedOperation))
-			Expect(rest).Should(BeEquivalentTo(presentations[halfSize:]))
-		})
-	})
+	// 	It("should correctly identify and save the part of presentations", func() {
+	// 		Expect(err).Should(MatchError(errUnsupportedOperation))
+	// 		Expect(rest).Should(BeEquivalentTo(presentations[halfSize:]))
+	// 	})
+	// })
 })

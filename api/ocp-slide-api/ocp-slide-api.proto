@@ -10,14 +10,14 @@ service SlideAPI {
 	// Creates a new slide
 	rpc CreateSlideV1(CreateSlideV1Request) returns (CreateSlideV1Response) {
 		option (google.api.http) = {
-			post: "/v1/slides"
+			post: "/v1/slide"
 		};
 	}
 
 	// Returns a slide by id
 	rpc DescribeSlideV1(DescribeSlideV1Request) returns (DescribeSlideV1Response) {
 		option (google.api.http) = {
-			get: "/v1/slides/{slide_id}"
+			get: "/v1/slide/{slide_id}"
 		};
 	}
 
@@ -31,7 +31,7 @@ service SlideAPI {
 	// Removes a slide by id
 	rpc RemoveSlideV1(RemoveSlideV1Request) returns (RemoveSlideV1Response) {
 		option (google.api.http) = {
-			delete: "/v1/slides/{slide_id}"
+			delete: "/v1/slide/{slide_id}"
 		};
 	}
 }
@@ -61,7 +61,7 @@ message DescribeSlideV1Response {
 ///////////////////////////////////////////////////////////////////////////////
 
 message ListSlidesV1Request {
-	uint64 limit = 1;
+	uint64 limit = 1 [(validate.rules).uint64.gt = 0];
 	uint64 offset = 2;
 }
 

@@ -35,56 +35,58 @@ func (m *MockRepo) EXPECT() *MockRepoMockRecorder {
 	return m.recorder
 }
 
-// AddPresentation mocks base method.
-func (m *MockRepo) AddPresentation(arg0 context.Context, arg1 *model.Presentation) (uint64, error) {
+// CreatePresentation mocks base method.
+func (m *MockRepo) CreatePresentation(arg0 context.Context, arg1 model.Presentation) (uint64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddPresentation", arg0, arg1)
+	ret := m.ctrl.Call(m, "CreatePresentation", arg0, arg1)
 	ret0, _ := ret[0].(uint64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// AddPresentation indicates an expected call of AddPresentation.
-func (mr *MockRepoMockRecorder) AddPresentation(arg0, arg1 interface{}) *gomock.Call {
+// CreatePresentation indicates an expected call of CreatePresentation.
+func (mr *MockRepoMockRecorder) CreatePresentation(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPresentation", reflect.TypeOf((*MockRepo)(nil).AddPresentation), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePresentation", reflect.TypeOf((*MockRepo)(nil).CreatePresentation), arg0, arg1)
 }
 
-// AddPresentations mocks base method.
-func (m *MockRepo) AddPresentations(arg0 context.Context, arg1 []model.Presentation) error {
+// DescribePresentation mocks base method.
+func (m *MockRepo) DescribePresentation(arg0 context.Context, arg1 uint64) (*model.Presentation, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddPresentations", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// AddPresentations indicates an expected call of AddPresentations.
-func (mr *MockRepoMockRecorder) AddPresentations(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPresentations", reflect.TypeOf((*MockRepo)(nil).AddPresentations), arg0, arg1)
-}
-
-// GetPresentation mocks base method.
-func (m *MockRepo) GetPresentation(arg0 context.Context, arg1 uint64) (*model.Presentation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPresentation", arg0, arg1)
+	ret := m.ctrl.Call(m, "DescribePresentation", arg0, arg1)
 	ret0, _ := ret[0].(*model.Presentation)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetPresentation indicates an expected call of GetPresentation.
-func (mr *MockRepoMockRecorder) GetPresentation(arg0, arg1 interface{}) *gomock.Call {
+// DescribePresentation indicates an expected call of DescribePresentation.
+func (mr *MockRepoMockRecorder) DescribePresentation(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPresentation", reflect.TypeOf((*MockRepo)(nil).GetPresentation), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribePresentation", reflect.TypeOf((*MockRepo)(nil).DescribePresentation), arg0, arg1)
+}
+
+// ListPresentations mocks base method.
+func (m *MockRepo) ListPresentations(arg0 context.Context, arg1, arg2 uint64) ([]model.Presentation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPresentations", arg0, arg1, arg2)
+	ret0, _ := ret[0].([]model.Presentation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListPresentations indicates an expected call of ListPresentations.
+func (mr *MockRepoMockRecorder) ListPresentations(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPresentations", reflect.TypeOf((*MockRepo)(nil).ListPresentations), arg0, arg1, arg2)
 }
 
 // RemovePresentation mocks base method.
-func (m *MockRepo) RemovePresentation(arg0 context.Context, arg1 uint64) error {
+func (m *MockRepo) RemovePresentation(arg0 context.Context, arg1 uint64) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RemovePresentation", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // RemovePresentation indicates an expected call of RemovePresentation.

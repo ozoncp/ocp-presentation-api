@@ -102,7 +102,7 @@ coverage:
 
 .PHONY: clean
 clean:
-		rm -rf bin pkg swagger vendor.protogen
+		rm -rf bin pkg swagger vendor.protogen coverage.out
 
 .PHONY: tidy
 tidy:
@@ -114,4 +114,8 @@ lint:
 
 .PHONY: grpcui
 grpcui:
-		grpcui -proto ./api/ocp-presentation-api/ocp-presentation-api.proto -import-path ./vendor.protogen -plaintext -open-browser localhost:7002
+		grpcui -proto ./api/ocp-presentation-api/ocp-presentation-api.proto -import-path ./vendor.protogen -plaintext -open-browser localhost:8000
+
+.PHONY: deploy
+deploy:
+		docker-compose up -d
