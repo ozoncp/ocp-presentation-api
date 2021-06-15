@@ -350,7 +350,12 @@ func (m *ListPresentationsV1Request) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Limit
+	if m.GetLimit() <= 0 {
+		return ListPresentationsV1RequestValidationError{
+			field:  "Limit",
+			reason: "value must be greater than 0",
+		}
+	}
 
 	// no validation rules for Offset
 
@@ -649,9 +654,9 @@ func (m *Presentation) Validate() error {
 		return nil
 	}
 
-	if m.GetPresentationId() <= 0 {
+	if m.GetId() <= 0 {
 		return PresentationValidationError{
-			field:  "PresentationId",
+			field:  "Id",
 			reason: "value must be greater than 0",
 		}
 	}

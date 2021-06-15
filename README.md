@@ -21,7 +21,7 @@ make generate
 docker pull swaggerapi/swagger-ui
 ```
 ### Run
-on Unix
+On Unix
 ```sh
 docker run -d -p 80:8080 -e BASE_URL=/swagger -e SWAGGER_JSON=/swagger/api.swagger.json -v `pwd`/swagger:/swagger swaggerapi/swagger-ui
 ```
@@ -33,5 +33,20 @@ docker run -d -p 80:8080 -e BASE_URL=/swagger -e SWAGGER_JSON=/swagger/api.swagg
 
 ## grpcui
 ```sh
-grpcui -proto ./api/ocp-presentation-api/ocp-presentation-api.proto -import-path ./vendor.protogen -plaintext -open-browser localhost:7002
+grpcui -proto ./api/ocp-presentation-api/ocp-presentation-api.proto -import-path ./vendor.protogen -plaintext -open-browser localhost:8000
+```
+
+# docker-compose
+```sh
+docker-compose run web
+
+docker-compose up -d
+docker-compose build
+docker-compose up --build
+
+docker-compose ps
+docker logs --follow ocp-presentation-api_web_1
+
+docker-compose stop
+docker-compose down --volumes
 ```

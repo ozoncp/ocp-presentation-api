@@ -11,44 +11,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/slides": {
-      "get": {
-        "summary": "Returns a list of slides",
-        "operationId": "SlideAPI_ListSlidesV1",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/apiListSlidesV1Response"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/runtimeError"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          }
-        ],
-        "tags": [
-          "SlideAPI"
-        ]
-      },
+    "/v1/slide": {
       "post": {
         "summary": "Creates a new slide",
         "operationId": "SlideAPI_CreateSlideV1",
@@ -71,7 +34,7 @@
         ]
       }
     },
-    "/v1/slides/{slide_id}": {
+    "/v1/slide/{slide_id}": {
       "get": {
         "summary": "Returns a slide by id",
         "operationId": "SlideAPI_DescribeSlideV1",
@@ -124,6 +87,45 @@
             "name": "slide_id",
             "in": "path",
             "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "SlideAPI"
+        ]
+      }
+    },
+    "/v1/slides": {
+      "get": {
+        "summary": "Returns a list of slides",
+        "operationId": "SlideAPI_ListSlidesV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListSlidesV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
             "type": "string",
             "format": "uint64"
           }

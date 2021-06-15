@@ -11,42 +11,7 @@
     "version": "version not set"
   },
   "paths": {
-    "/v1/presentations": {
-      "get": {
-        "tags": [
-          "PresentationAPI"
-        ],
-        "summary": "Returns a list of presentations",
-        "operationId": "PresentationAPI_ListPresentationsV1",
-        "parameters": [
-          {
-            "type": "string",
-            "format": "uint64",
-            "name": "limit",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "format": "uint64",
-            "name": "offset",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/apiListPresentationsV1Response"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/runtimeError"
-            }
-          }
-        }
-      },
+    "/v1/presentation": {
       "post": {
         "tags": [
           "PresentationAPI"
@@ -69,7 +34,7 @@
         }
       }
     },
-    "/v1/presentations/{presentation_id}": {
+    "/v1/presentation/{presentation_id}": {
       "get": {
         "tags": [
           "PresentationAPI"
@@ -131,13 +96,13 @@
         }
       }
     },
-    "/v1/slides": {
+    "/v1/presentations": {
       "get": {
         "tags": [
-          "SlideAPI"
+          "PresentationAPI"
         ],
-        "summary": "Returns a list of slides",
-        "operationId": "SlideAPI_ListSlidesV1",
+        "summary": "Returns a list of presentations",
+        "operationId": "PresentationAPI_ListPresentationsV1",
         "parameters": [
           {
             "type": "string",
@@ -156,7 +121,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListSlidesV1Response"
+              "$ref": "#/definitions/apiListPresentationsV1Response"
             }
           },
           "default": {
@@ -166,7 +131,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/v1/slide": {
       "post": {
         "tags": [
           "SlideAPI"
@@ -189,7 +156,7 @@
         }
       }
     },
-    "/v1/slides/{slide_id}": {
+    "/v1/slide/{slide_id}": {
       "get": {
         "tags": [
           "SlideAPI"
@@ -240,6 +207,43 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/apiRemoveSlideV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      }
+    },
+    "/v1/slides": {
+      "get": {
+        "tags": [
+          "SlideAPI"
+        ],
+        "summary": "Returns a list of slides",
+        "operationId": "SlideAPI_ListSlidesV1",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListSlidesV1Response"
             }
           },
           "default": {
@@ -315,16 +319,16 @@
         "description": {
           "type": "string"
         },
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
         "lesson_id": {
           "type": "string",
           "format": "uint64"
         },
         "name": {
           "type": "string"
-        },
-        "presentation_id": {
-          "type": "string",
-          "format": "uint64"
         },
         "user_id": {
           "type": "string",

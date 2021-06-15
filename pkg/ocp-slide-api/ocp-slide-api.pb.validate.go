@@ -344,7 +344,12 @@ func (m *ListSlidesV1Request) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Limit
+	if m.GetLimit() <= 0 {
+		return ListSlidesV1RequestValidationError{
+			field:  "Limit",
+			reason: "value must be greater than 0",
+		}
+	}
 
 	// no validation rules for Offset
 

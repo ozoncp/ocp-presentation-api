@@ -1,8 +1,9 @@
 syntax = "proto3";
-package ocp.presentation.api;
 
 import "google/api/annotations.proto";
 import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
+
+package ocp.presentation.api;
 
 option go_package = "gihtub.com/ozoncp/ocp-presentation-api/pkg/ocp-presentation-api";
 
@@ -10,14 +11,14 @@ service PresentationAPI {
 	// Creates a new presentation
 	rpc CreatePresentationV1(CreatePresentationV1Request) returns (CreatePresentationV1Response) {
 		option (google.api.http) = {
-			post: "/v1/presentations"
+			post: "/v1/presentation"
 		};
 	}
 
 	// Returns a presentation by id
 	rpc DescribePresentationV1(DescribePresentationV1Request) returns (DescribePresentationV1Response) {
 		option (google.api.http) = {
-			get: "/v1/presentations/{presentation_id}"
+			get: "/v1/presentation/{presentation_id}"
 		};
 	}
 
@@ -31,7 +32,7 @@ service PresentationAPI {
 	// Removes a presentation by id
 	rpc RemovePresentationV1(RemovePresentationV1Request) returns (RemovePresentationV1Response) {
 		option (google.api.http) = {
-			delete: "/v1/presentations/{presentation_id}"
+			delete: "/v1/presentation/{presentation_id}"
 		};
 	}
 }
@@ -62,7 +63,7 @@ message DescribePresentationV1Response {
 ///////////////////////////////////////////////////////////////////////////////
 
 message ListPresentationsV1Request {
-	uint64 limit = 1;
+	uint64 limit = 1 [(validate.rules).uint64.gt = 0];
 	uint64 offset = 2;
 }
 
@@ -83,7 +84,7 @@ message RemovePresentationV1Response {
 ///////////////////////////////////////////////////////////////////////////////
 
 message Presentation {
-	uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
+	uint64 id = 1 [(validate.rules).uint64.gt = 0];
 	uint64 user_id = 2 [(validate.rules).uint64.gt = 0];
 	uint64 lesson_id = 3 [(validate.rules).uint64.gt = 0];
 	string name = 4;
