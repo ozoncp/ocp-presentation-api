@@ -16,13 +16,13 @@
         "tags": [
           "PresentationAPI"
         ],
-        "summary": "Creates a new presentation",
-        "operationId": "PresentationAPI_CreatePresentationV1",
+        "summary": "Updates a presentation",
+        "operationId": "PresentationAPI_UpdatePresentationV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiCreatePresentationV1Response"
+              "$ref": "#/definitions/apiUpdatePresentationV1Response"
             }
           },
           "default": {
@@ -122,6 +122,27 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/apiListPresentationsV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "PresentationAPI"
+        ],
+        "summary": "Creates new presentations",
+        "operationId": "PresentationAPI_MultiCreatePresentationsV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiMultiCreatePresentationsV1Response"
             }
           },
           "default": {
@@ -313,6 +334,34 @@
         }
       }
     },
+    "apiMultiCreatePresentationsV1Response": {
+      "type": "object",
+      "properties": {
+        "number_of_created_presentations": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiNewPresentation": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "lesson_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
     "apiPresentation": {
       "type": "object",
       "properties": {
@@ -381,6 +430,14 @@
         "Document",
         "Task"
       ]
+    },
+    "apiUpdatePresentationV1Response": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "boolean"
+        }
+      }
     },
     "protobufAny": {
       "type": "object",

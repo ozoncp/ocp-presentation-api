@@ -28,16 +28,18 @@ require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.13.0
+	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pelletier/go-toml v1.9.3 // indirect
 	github.com/pressly/goose v2.7.0+incompatible // indirect
 	github.com/rs/zerolog v1.23.0
 	github.com/spf13/afero v1.6.0 // indirect
+	github.com/spf13/viper v1.8.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	go.mongodb.org/mongo-driver v1.5.3 // indirect
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
-	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
 	golang.org/x/tools v0.1.3 // indirect
 	google.golang.org/genproto v0.0.0-20210614182748-5b3b54cad159
 	google.golang.org/grpc v1.38.0

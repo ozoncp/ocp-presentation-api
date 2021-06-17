@@ -80,6 +80,21 @@ func (mr *MockRepoMockRecorder) ListPresentations(arg0, arg1, arg2 interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPresentations", reflect.TypeOf((*MockRepo)(nil).ListPresentations), arg0, arg1, arg2)
 }
 
+// MultiCreatePresentations mocks base method.
+func (m *MockRepo) MultiCreatePresentations(arg0 context.Context, arg1 []model.Presentation) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MultiCreatePresentations", arg0, arg1)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MultiCreatePresentations indicates an expected call of MultiCreatePresentations.
+func (mr *MockRepoMockRecorder) MultiCreatePresentations(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MultiCreatePresentations", reflect.TypeOf((*MockRepo)(nil).MultiCreatePresentations), arg0, arg1)
+}
+
 // RemovePresentation mocks base method.
 func (m *MockRepo) RemovePresentation(arg0 context.Context, arg1 uint64) (bool, error) {
 	m.ctrl.T.Helper()
@@ -93,4 +108,19 @@ func (m *MockRepo) RemovePresentation(arg0 context.Context, arg1 uint64) (bool, 
 func (mr *MockRepoMockRecorder) RemovePresentation(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemovePresentation", reflect.TypeOf((*MockRepo)(nil).RemovePresentation), arg0, arg1)
+}
+
+// UpdatePresentation mocks base method.
+func (m *MockRepo) UpdatePresentation(arg0 context.Context, arg1 model.Presentation) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePresentation", arg0, arg1)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdatePresentation indicates an expected call of UpdatePresentation.
+func (mr *MockRepoMockRecorder) UpdatePresentation(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePresentation", reflect.TypeOf((*MockRepo)(nil).UpdatePresentation), arg0, arg1)
 }

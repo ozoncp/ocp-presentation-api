@@ -41,23 +41,22 @@ func (m *CreatePresentationV1Request) Validate() error {
 		return nil
 	}
 
-	if m.GetUserId() <= 0 {
+	if m.GetPresentation() == nil {
 		return CreatePresentationV1RequestValidationError{
-			field:  "UserId",
-			reason: "value must be greater than 0",
+			field:  "Presentation",
+			reason: "value is required",
 		}
 	}
 
-	if m.GetLessonId() <= 0 {
-		return CreatePresentationV1RequestValidationError{
-			field:  "LessonId",
-			reason: "value must be greater than 0",
+	if v, ok := interface{}(m.GetPresentation()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreatePresentationV1RequestValidationError{
+				field:  "Presentation",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
 		}
 	}
-
-	// no validation rules for Name
-
-	// no validation rules for Description
 
 	return nil
 }
@@ -189,6 +188,321 @@ var _ interface {
 	ErrorName() string
 } = CreatePresentationV1ResponseValidationError{}
 
+// Validate checks the field values on MultiCreatePresentationsV1Request with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, an error is returned.
+func (m *MultiCreatePresentationsV1Request) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if l := len(m.GetPresentations()); l < 1 || l > 1024 {
+		return MultiCreatePresentationsV1RequestValidationError{
+			field:  "Presentations",
+			reason: "value must contain between 1 and 1024 items, inclusive",
+		}
+	}
+
+	for idx, item := range m.GetPresentations() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return MultiCreatePresentationsV1RequestValidationError{
+					field:  fmt.Sprintf("Presentations[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// MultiCreatePresentationsV1RequestValidationError is the validation error
+// returned by MultiCreatePresentationsV1Request.Validate if the designated
+// constraints aren't met.
+type MultiCreatePresentationsV1RequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MultiCreatePresentationsV1RequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MultiCreatePresentationsV1RequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MultiCreatePresentationsV1RequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MultiCreatePresentationsV1RequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MultiCreatePresentationsV1RequestValidationError) ErrorName() string {
+	return "MultiCreatePresentationsV1RequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e MultiCreatePresentationsV1RequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMultiCreatePresentationsV1Request.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MultiCreatePresentationsV1RequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MultiCreatePresentationsV1RequestValidationError{}
+
+// Validate checks the field values on MultiCreatePresentationsV1Response with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, an error is returned.
+func (m *MultiCreatePresentationsV1Response) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for NumberOfCreatedPresentations
+
+	return nil
+}
+
+// MultiCreatePresentationsV1ResponseValidationError is the validation error
+// returned by MultiCreatePresentationsV1Response.Validate if the designated
+// constraints aren't met.
+type MultiCreatePresentationsV1ResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MultiCreatePresentationsV1ResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MultiCreatePresentationsV1ResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MultiCreatePresentationsV1ResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MultiCreatePresentationsV1ResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MultiCreatePresentationsV1ResponseValidationError) ErrorName() string {
+	return "MultiCreatePresentationsV1ResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e MultiCreatePresentationsV1ResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMultiCreatePresentationsV1Response.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MultiCreatePresentationsV1ResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MultiCreatePresentationsV1ResponseValidationError{}
+
+// Validate checks the field values on UpdatePresentationV1Request with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdatePresentationV1Request) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetPresentation() == nil {
+		return UpdatePresentationV1RequestValidationError{
+			field:  "Presentation",
+			reason: "value is required",
+		}
+	}
+
+	if v, ok := interface{}(m.GetPresentation()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdatePresentationV1RequestValidationError{
+				field:  "Presentation",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdatePresentationV1RequestValidationError is the validation error returned
+// by UpdatePresentationV1Request.Validate if the designated constraints
+// aren't met.
+type UpdatePresentationV1RequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdatePresentationV1RequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdatePresentationV1RequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdatePresentationV1RequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdatePresentationV1RequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdatePresentationV1RequestValidationError) ErrorName() string {
+	return "UpdatePresentationV1RequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdatePresentationV1RequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdatePresentationV1Request.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdatePresentationV1RequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdatePresentationV1RequestValidationError{}
+
+// Validate checks the field values on UpdatePresentationV1Response with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdatePresentationV1Response) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Found
+
+	return nil
+}
+
+// UpdatePresentationV1ResponseValidationError is the validation error returned
+// by UpdatePresentationV1Response.Validate if the designated constraints
+// aren't met.
+type UpdatePresentationV1ResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdatePresentationV1ResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdatePresentationV1ResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdatePresentationV1ResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdatePresentationV1ResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdatePresentationV1ResponseValidationError) ErrorName() string {
+	return "UpdatePresentationV1ResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdatePresentationV1ResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdatePresentationV1Response.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdatePresentationV1ResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdatePresentationV1ResponseValidationError{}
+
 // Validate checks the field values on DescribePresentationV1Request with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -197,10 +511,10 @@ func (m *DescribePresentationV1Request) Validate() error {
 		return nil
 	}
 
-	if m.GetPresentationId() <= 0 {
+	if m.GetPresentationId() < 1 {
 		return DescribePresentationV1RequestValidationError{
 			field:  "PresentationId",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 
@@ -350,10 +664,10 @@ func (m *ListPresentationsV1Request) Validate() error {
 		return nil
 	}
 
-	if m.GetLimit() <= 0 {
+	if val := m.GetLimit(); val < 1 || val > 1024 {
 		return ListPresentationsV1RequestValidationError{
 			field:  "Limit",
-			reason: "value must be greater than 0",
+			reason: "value must be inside range [1, 1024]",
 		}
 	}
 
@@ -509,10 +823,10 @@ func (m *RemovePresentationV1Request) Validate() error {
 		return nil
 	}
 
-	if m.GetPresentationId() <= 0 {
+	if m.GetPresentationId() < 1 {
 		return RemovePresentationV1RequestValidationError{
 			field:  "PresentationId",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 
@@ -646,6 +960,99 @@ var _ interface {
 	ErrorName() string
 } = RemovePresentationV1ResponseValidationError{}
 
+// Validate checks the field values on NewPresentation with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *NewPresentation) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetUserId() < 1 {
+		return NewPresentationValidationError{
+			field:  "UserId",
+			reason: "value must be greater than or equal to 1",
+		}
+	}
+
+	if m.GetLessonId() < 1 {
+		return NewPresentationValidationError{
+			field:  "LessonId",
+			reason: "value must be greater than or equal to 1",
+		}
+	}
+
+	if utf8.RuneCountInString(m.GetName()) > 256 {
+		return NewPresentationValidationError{
+			field:  "Name",
+			reason: "value length must be at most 256 runes",
+		}
+	}
+
+	if utf8.RuneCountInString(m.GetDescription()) > 1024 {
+		return NewPresentationValidationError{
+			field:  "Description",
+			reason: "value length must be at most 1024 runes",
+		}
+	}
+
+	return nil
+}
+
+// NewPresentationValidationError is the validation error returned by
+// NewPresentation.Validate if the designated constraints aren't met.
+type NewPresentationValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e NewPresentationValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e NewPresentationValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e NewPresentationValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e NewPresentationValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e NewPresentationValidationError) ErrorName() string { return "NewPresentationValidationError" }
+
+// Error satisfies the builtin error interface
+func (e NewPresentationValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sNewPresentation.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = NewPresentationValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = NewPresentationValidationError{}
+
 // Validate checks the field values on Presentation with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
 // is returned.
@@ -654,30 +1061,40 @@ func (m *Presentation) Validate() error {
 		return nil
 	}
 
-	if m.GetId() <= 0 {
+	if m.GetId() < 1 {
 		return PresentationValidationError{
 			field:  "Id",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 
-	if m.GetUserId() <= 0 {
+	if m.GetUserId() < 1 {
 		return PresentationValidationError{
 			field:  "UserId",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 
-	if m.GetLessonId() <= 0 {
+	if m.GetLessonId() < 1 {
 		return PresentationValidationError{
 			field:  "LessonId",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 
-	// no validation rules for Name
+	if utf8.RuneCountInString(m.GetName()) > 256 {
+		return PresentationValidationError{
+			field:  "Name",
+			reason: "value length must be at most 256 runes",
+		}
+	}
 
-	// no validation rules for Description
+	if utf8.RuneCountInString(m.GetDescription()) > 1024 {
+		return PresentationValidationError{
+			field:  "Description",
+			reason: "value length must be at most 1024 runes",
+		}
+	}
 
 	return nil
 }
