@@ -68,8 +68,8 @@ var _ = Describe("API", func() {
 
 		sqlxDB = sqlx.NewDb(db, "sqlmock")
 
-		repo = repository.NewRepo(sqlxDB, 2)
-		server = api.NewPresentationAPI(repo)
+		repo = repository.NewRepo(sqlxDB)
+		server = api.NewPresentationAPI(repo, 2)
 	})
 
 	JustBeforeEach(func() {
@@ -88,15 +88,20 @@ var _ = Describe("API", func() {
 
 		BeforeEach(func() {
 			createRequest = &desc.CreatePresentationV1Request{
-				UserId:      1,
-				LessonId:    1,
-				Name:        "Presentation",
-				Description: "Description",
+				Presentation: &desc.NewPresentation{
+					UserId:      1,
+					LessonId:    1,
+					Name:        "Presentation",
+					Description: "Description",
+				},
 			}
 
 			rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
-			mock.ExpectQuery("INSERT INTO presentation").
-				WithArgs(createRequest.UserId, createRequest.LessonId, createRequest.Name, createRequest.Description).
+			mock.ExpectQuery("INSERT INTO presentation").WithArgs(
+				createRequest.Presentation.UserId,
+				createRequest.Presentation.LessonId,
+				createRequest.Presentation.Name,
+				createRequest.Presentation.Description).
 				WillReturnRows(rows)
 
 			createResponse, err = server.CreatePresentationV1(ctx, createRequest)
@@ -123,14 +128,19 @@ var _ = Describe("API", func() {
 	Context("no database connecting", func() {
 		BeforeEach(func() {
 			createRequest = &desc.CreatePresentationV1Request{
-				UserId:      1,
-				LessonId:    1,
-				Name:        "Presentation",
-				Description: "Description",
+				Presentation: &desc.NewPresentation{
+					UserId:      1,
+					LessonId:    1,
+					Name:        "Presentation",
+					Description: "Description",
+				},
 			}
 
-			mock.ExpectQuery("INSERT INTO presentation").
-				WithArgs(createRequest.UserId, createRequest.LessonId, createRequest.Name, createRequest.Description).
+			mock.ExpectQuery("INSERT INTO presentation").WithArgs(
+				createRequest.Presentation.UserId,
+				createRequest.Presentation.LessonId,
+				createRequest.Presentation.Name,
+				createRequest.Presentation.Description).
 				WillReturnError(errors.New("bad connection"))
 
 			createResponse, err = server.CreatePresentationV1(ctx, createRequest)
@@ -159,8 +169,12 @@ var _ = Describe("API", func() {
 			}
 
 			rows := sqlmock.NewRows([]string{
-				"id", "lesson_id", "user_id", "name", "description"}).
-				AddRow(presentation.ID, presentation.LessonID, presentation.UserID, presentation.Name, presentation.Description)
+				"id", "lesson_id", "user_id", "name", "description"}).AddRow(
+				presentation.ID,
+				presentation.LessonID,
+				presentation.UserID,
+				presentation.Name,
+				presentation.Description)
 
 			mock.ExpectQuery("SELECT (.+) FROM presentation WHERE").
 				WithArgs(describeRequest.PresentationId).

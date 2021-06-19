@@ -13,8 +13,7 @@ make vendor-proto
 make generate
 ```
 
-## [swagger-ui](https://editor.swagger.io/)
-## [Local swagger-ui](http://localhost:80/swagger)
+## [swagger-ui](http://localhost:80/swagger)
 
 ### Download
 ```sh
@@ -38,7 +37,9 @@ grpcui -proto ./api/ocp-presentation-api/ocp-presentation-api.proto -import-path
 
 # docker-compose
 ```sh
-docker-compose run web
+docker-compose pull
+
+docker-compose run ocp-presentation-api
 
 docker-compose up -d
 docker-compose build
@@ -50,3 +51,7 @@ docker logs --follow ocp-presentation-api_web_1
 docker-compose stop
 docker-compose down --volumes
 ```
+
+## [prometheus](http://localhost:9090)
+
+## [Jaeger UI](http://localhost:16686)

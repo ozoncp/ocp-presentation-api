@@ -1,11 +1,16 @@
 .PHONY: build
 build: vendor-proto generate .build
 
-.PHONY: .all
-.all: dependencies build
-
 .PHONY: all
-all: requirements .all
+ifeq ($(OS), Windows_NT)
+all: dependencies build
+else
+all: requirements dependencies build
+endif
+
+PHONY: mock
+mock:
+	go generate ./...
 
 PHONY: generate
 generate:
@@ -102,7 +107,7 @@ coverage:
 
 .PHONY: clean
 clean:
-		rm -rf bin pkg swagger vendor.protogen coverage.out
+		rm -rf bin pkg swagger vendor.protogen internal/mock coverage.out
 
 .PHONY: tidy
 tidy:

@@ -20,6 +20,10 @@ const _ = grpc.SupportPackageIsVersion7
 type PresentationAPIClient interface {
 	// Creates a new presentation
 	CreatePresentationV1(ctx context.Context, in *CreatePresentationV1Request, opts ...grpc.CallOption) (*CreatePresentationV1Response, error)
+	// Creates new presentations
+	MultiCreatePresentationsV1(ctx context.Context, in *MultiCreatePresentationsV1Request, opts ...grpc.CallOption) (*MultiCreatePresentationsV1Response, error)
+	// Updates a presentation
+	UpdatePresentationV1(ctx context.Context, in *UpdatePresentationV1Request, opts ...grpc.CallOption) (*UpdatePresentationV1Response, error)
 	// Returns a presentation by id
 	DescribePresentationV1(ctx context.Context, in *DescribePresentationV1Request, opts ...grpc.CallOption) (*DescribePresentationV1Response, error)
 	// Returns a list of presentations
@@ -39,6 +43,24 @@ func NewPresentationAPIClient(cc grpc.ClientConnInterface) PresentationAPIClient
 func (c *presentationAPIClient) CreatePresentationV1(ctx context.Context, in *CreatePresentationV1Request, opts ...grpc.CallOption) (*CreatePresentationV1Response, error) {
 	out := new(CreatePresentationV1Response)
 	err := c.cc.Invoke(ctx, "/ocp.presentation.api.PresentationAPI/CreatePresentationV1", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *presentationAPIClient) MultiCreatePresentationsV1(ctx context.Context, in *MultiCreatePresentationsV1Request, opts ...grpc.CallOption) (*MultiCreatePresentationsV1Response, error) {
+	out := new(MultiCreatePresentationsV1Response)
+	err := c.cc.Invoke(ctx, "/ocp.presentation.api.PresentationAPI/MultiCreatePresentationsV1", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *presentationAPIClient) UpdatePresentationV1(ctx context.Context, in *UpdatePresentationV1Request, opts ...grpc.CallOption) (*UpdatePresentationV1Response, error) {
+	out := new(UpdatePresentationV1Response)
+	err := c.cc.Invoke(ctx, "/ocp.presentation.api.PresentationAPI/UpdatePresentationV1", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,6 +100,10 @@ func (c *presentationAPIClient) RemovePresentationV1(ctx context.Context, in *Re
 type PresentationAPIServer interface {
 	// Creates a new presentation
 	CreatePresentationV1(context.Context, *CreatePresentationV1Request) (*CreatePresentationV1Response, error)
+	// Creates new presentations
+	MultiCreatePresentationsV1(context.Context, *MultiCreatePresentationsV1Request) (*MultiCreatePresentationsV1Response, error)
+	// Updates a presentation
+	UpdatePresentationV1(context.Context, *UpdatePresentationV1Request) (*UpdatePresentationV1Response, error)
 	// Returns a presentation by id
 	DescribePresentationV1(context.Context, *DescribePresentationV1Request) (*DescribePresentationV1Response, error)
 	// Returns a list of presentations
@@ -93,6 +119,12 @@ type UnimplementedPresentationAPIServer struct {
 
 func (UnimplementedPresentationAPIServer) CreatePresentationV1(context.Context, *CreatePresentationV1Request) (*CreatePresentationV1Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePresentationV1 not implemented")
+}
+func (UnimplementedPresentationAPIServer) MultiCreatePresentationsV1(context.Context, *MultiCreatePresentationsV1Request) (*MultiCreatePresentationsV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MultiCreatePresentationsV1 not implemented")
+}
+func (UnimplementedPresentationAPIServer) UpdatePresentationV1(context.Context, *UpdatePresentationV1Request) (*UpdatePresentationV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePresentationV1 not implemented")
 }
 func (UnimplementedPresentationAPIServer) DescribePresentationV1(context.Context, *DescribePresentationV1Request) (*DescribePresentationV1Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribePresentationV1 not implemented")
@@ -130,6 +162,42 @@ func _PresentationAPI_CreatePresentationV1_Handler(srv interface{}, ctx context.
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PresentationAPIServer).CreatePresentationV1(ctx, req.(*CreatePresentationV1Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PresentationAPI_MultiCreatePresentationsV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MultiCreatePresentationsV1Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PresentationAPIServer).MultiCreatePresentationsV1(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ocp.presentation.api.PresentationAPI/MultiCreatePresentationsV1",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PresentationAPIServer).MultiCreatePresentationsV1(ctx, req.(*MultiCreatePresentationsV1Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PresentationAPI_UpdatePresentationV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePresentationV1Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PresentationAPIServer).UpdatePresentationV1(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ocp.presentation.api.PresentationAPI/UpdatePresentationV1",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PresentationAPIServer).UpdatePresentationV1(ctx, req.(*UpdatePresentationV1Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -198,6 +266,14 @@ var PresentationAPI_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreatePresentationV1",
 			Handler:    _PresentationAPI_CreatePresentationV1_Handler,
+		},
+		{
+			MethodName: "MultiCreatePresentationsV1",
+			Handler:    _PresentationAPI_MultiCreatePresentationsV1_Handler,
+		},
+		{
+			MethodName: "UpdatePresentationV1",
+			Handler:    _PresentationAPI_UpdatePresentationV1_Handler,
 		},
 		{
 			MethodName: "DescribePresentationV1",

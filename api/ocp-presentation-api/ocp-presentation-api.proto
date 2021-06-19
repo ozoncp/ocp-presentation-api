@@ -15,6 +15,20 @@ service PresentationAPI {
 		};
 	}
 
+	// Creates new presentations
+	rpc MultiCreatePresentationsV1(MultiCreatePresentationsV1Request) returns (MultiCreatePresentationsV1Response) {
+		option (google.api.http) = {
+			post: "/v1/presentations"
+		};
+	}
+
+	// Updates a presentation
+    rpc UpdatePresentationV1(UpdatePresentationV1Request) returns (UpdatePresentationV1Response) {
+        option (google.api.http) = {
+            post: "/v1/presentation"
+        };
+    }
+
 	// Returns a presentation by id
 	rpc DescribePresentationV1(DescribePresentationV1Request) returns (DescribePresentationV1Response) {
 		option (google.api.http) = {
@@ -40,10 +54,7 @@ service PresentationAPI {
 ///////////////////////////////////////////////////////////////////////////////
 
 message CreatePresentationV1Request {
-	uint64 user_id = 1 [(validate.rules).uint64.gt = 0];
-	uint64 lesson_id = 2 [(validate.rules).uint64.gt = 0];
-	string name = 3;
-	string description = 4;
+	NewPresentation presentation = 1 [(validate.rules).message.required = true];
 }
 
 message CreatePresentationV1Response {
@@ -52,8 +63,28 @@ message CreatePresentationV1Response {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+message MultiCreatePresentationsV1Request {
+	repeated NewPresentation presentations = 1 [(validate.rules).repeated = {min_items: 1, max_items: 1024}];
+}
+
+message MultiCreatePresentationsV1Response {
+	int64 number_of_created_presentations = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+message UpdatePresentationV1Request {
+	Presentation presentation = 1 [(validate.rules).message.required = true];
+}
+
+message UpdatePresentationV1Response {
+	bool found = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 message DescribePresentationV1Request {
-	uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
+	uint64 presentation_id = 1 [(validate.rules).uint64.gte = 1];
 }
 
 message DescribePresentationV1Response {
@@ -63,7 +94,7 @@ message DescribePresentationV1Response {
 ///////////////////////////////////////////////////////////////////////////////
 
 message ListPresentationsV1Request {
-	uint64 limit = 1 [(validate.rules).uint64.gt = 0];
+	uint64 limit = 1 [(validate.rules).uint64 = {gte:1, lte: 1024}];
 	uint64 offset = 2;
 }
 
@@ -74,7 +105,7 @@ message ListPresentationsV1Response {
 ///////////////////////////////////////////////////////////////////////////////
 
 message RemovePresentationV1Request {
-	uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
+	uint64 presentation_id = 1 [(validate.rules).uint64.gte = 1];
 }
 
 message RemovePresentationV1Response {
@@ -83,10 +114,17 @@ message RemovePresentationV1Response {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+message NewPresentation {
+	uint64 user_id = 1 [(validate.rules).uint64.gte = 1];
+	uint64 lesson_id = 2 [(validate.rules).uint64.gte = 1];
+	string name = 3 [(validate.rules).string = {max_len: 256}];
+	string description = 4 [(validate.rules).string = {max_len: 1024}];
+}
+
 message Presentation {
-	uint64 id = 1 [(validate.rules).uint64.gt = 0];
-	uint64 user_id = 2 [(validate.rules).uint64.gt = 0];
-	uint64 lesson_id = 3 [(validate.rules).uint64.gt = 0];
-	string name = 4;
-	string description = 5;
+	uint64 id = 1 [(validate.rules).uint64.gte = 1];
+	uint64 user_id = 2 [(validate.rules).uint64.gte = 1];
+	uint64 lesson_id = 3 [(validate.rules).uint64.gte = 1];
+	string name = 4 [(validate.rules).string = {max_len: 256}];
+	string description = 5 [(validate.rules).string = {max_len: 1024}];
 }

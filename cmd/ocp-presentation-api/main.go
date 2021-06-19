@@ -19,6 +19,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const serviceName = "ocp-presentation-api"
+
 type config struct {
 	Address   string `env:"ADDRESS" envDefault:"0.0.0.0:8000"`
 	Database  string `env:"POSTGRES_DB,unset,notEmpty"`
@@ -45,11 +47,11 @@ func runGRPC(cfg *config) error {
 	}
 	log.Info().Msgf("A connection was successfully established with the database")
 
-	repo := repo.NewRepo(db, cfg.ChunkSize)
+	repo := repo.NewRepo(db)
 
 	server := grpc.NewServer()
 	reflection.Register(server)
-	desc.RegisterPresentationAPIServer(server, api.NewPresentationAPI(repo))
+	desc.RegisterPresentationAPIServer(server, api.NewPresentationAPI(repo, cfg.ChunkSize))
 
 	listen, err := net.Listen("tcp", cfg.Address)
 	if err != nil {
@@ -64,7 +66,7 @@ func runGRPC(cfg *config) error {
 func main() {
 	log.Logger = zerolog.New(os.Stdout).With().
 		Timestamp().
-		Str("role", "ocp-presentation-api").
+		Str("role", serviceName).
 		Caller().
 		Logger()
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
