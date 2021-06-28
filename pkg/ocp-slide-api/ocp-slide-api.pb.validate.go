@@ -41,21 +41,22 @@ func (m *CreateSlideV1Request) Validate() error {
 		return nil
 	}
 
-	if m.GetPresentationId() <= 0 {
+	if m.GetSlide() == nil {
 		return CreateSlideV1RequestValidationError{
-			field:  "PresentationId",
-			reason: "value must be greater than 0",
+			field:  "Slide",
+			reason: "value is required",
 		}
 	}
 
-	if m.GetNumber() <= 0 {
-		return CreateSlideV1RequestValidationError{
-			field:  "Number",
-			reason: "value must be greater than 0",
+	if v, ok := interface{}(m.GetSlide()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateSlideV1RequestValidationError{
+				field:  "Slide",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
 		}
 	}
-
-	// no validation rules for Type
 
 	return nil
 }
@@ -185,6 +186,318 @@ var _ interface {
 	ErrorName() string
 } = CreateSlideV1ResponseValidationError{}
 
+// Validate checks the field values on MultiCreateSlidesV1Request with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *MultiCreateSlidesV1Request) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if l := len(m.GetSlides()); l < 1 || l > 1024 {
+		return MultiCreateSlidesV1RequestValidationError{
+			field:  "Slides",
+			reason: "value must contain between 1 and 1024 items, inclusive",
+		}
+	}
+
+	for idx, item := range m.GetSlides() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return MultiCreateSlidesV1RequestValidationError{
+					field:  fmt.Sprintf("Slides[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// MultiCreateSlidesV1RequestValidationError is the validation error returned
+// by MultiCreateSlidesV1Request.Validate if the designated constraints aren't met.
+type MultiCreateSlidesV1RequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MultiCreateSlidesV1RequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MultiCreateSlidesV1RequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MultiCreateSlidesV1RequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MultiCreateSlidesV1RequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MultiCreateSlidesV1RequestValidationError) ErrorName() string {
+	return "MultiCreateSlidesV1RequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e MultiCreateSlidesV1RequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMultiCreateSlidesV1Request.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MultiCreateSlidesV1RequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MultiCreateSlidesV1RequestValidationError{}
+
+// Validate checks the field values on MultiCreateSlidesV1Response with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *MultiCreateSlidesV1Response) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for NumberOfCreatedSlides
+
+	return nil
+}
+
+// MultiCreateSlidesV1ResponseValidationError is the validation error returned
+// by MultiCreateSlidesV1Response.Validate if the designated constraints
+// aren't met.
+type MultiCreateSlidesV1ResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MultiCreateSlidesV1ResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MultiCreateSlidesV1ResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MultiCreateSlidesV1ResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MultiCreateSlidesV1ResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MultiCreateSlidesV1ResponseValidationError) ErrorName() string {
+	return "MultiCreateSlidesV1ResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e MultiCreateSlidesV1ResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMultiCreateSlidesV1Response.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MultiCreateSlidesV1ResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MultiCreateSlidesV1ResponseValidationError{}
+
+// Validate checks the field values on UpdateSlideV1Request with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateSlideV1Request) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetSlide() == nil {
+		return UpdateSlideV1RequestValidationError{
+			field:  "Slide",
+			reason: "value is required",
+		}
+	}
+
+	if v, ok := interface{}(m.GetSlide()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateSlideV1RequestValidationError{
+				field:  "Slide",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdateSlideV1RequestValidationError is the validation error returned by
+// UpdateSlideV1Request.Validate if the designated constraints aren't met.
+type UpdateSlideV1RequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateSlideV1RequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateSlideV1RequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateSlideV1RequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateSlideV1RequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateSlideV1RequestValidationError) ErrorName() string {
+	return "UpdateSlideV1RequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateSlideV1RequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateSlideV1Request.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateSlideV1RequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateSlideV1RequestValidationError{}
+
+// Validate checks the field values on UpdateSlideV1Response with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateSlideV1Response) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Found
+
+	return nil
+}
+
+// UpdateSlideV1ResponseValidationError is the validation error returned by
+// UpdateSlideV1Response.Validate if the designated constraints aren't met.
+type UpdateSlideV1ResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateSlideV1ResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateSlideV1ResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateSlideV1ResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateSlideV1ResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateSlideV1ResponseValidationError) ErrorName() string {
+	return "UpdateSlideV1ResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateSlideV1ResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateSlideV1Response.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateSlideV1ResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateSlideV1ResponseValidationError{}
+
 // Validate checks the field values on DescribeSlideV1Request with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -193,10 +506,10 @@ func (m *DescribeSlideV1Request) Validate() error {
 		return nil
 	}
 
-	if m.GetSlideId() <= 0 {
+	if m.GetSlideId() < 1 {
 		return DescribeSlideV1RequestValidationError{
 			field:  "SlideId",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 
@@ -344,10 +657,10 @@ func (m *ListSlidesV1Request) Validate() error {
 		return nil
 	}
 
-	if m.GetLimit() <= 0 {
+	if val := m.GetLimit(); val < 1 || val > 1024 {
 		return ListSlidesV1RequestValidationError{
 			field:  "Limit",
-			reason: "value must be greater than 0",
+			reason: "value must be inside range [1, 1024]",
 		}
 	}
 
@@ -502,10 +815,10 @@ func (m *RemoveSlideV1Request) Validate() error {
 		return nil
 	}
 
-	if m.GetSlideId() <= 0 {
+	if m.GetSlideId() < 1 {
 		return RemoveSlideV1RequestValidationError{
 			field:  "SlideId",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 
@@ -637,6 +950,86 @@ var _ interface {
 	ErrorName() string
 } = RemoveSlideV1ResponseValidationError{}
 
+// Validate checks the field values on NewSlide with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *NewSlide) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetPresentationId() < 1 {
+		return NewSlideValidationError{
+			field:  "PresentationId",
+			reason: "value must be greater than or equal to 1",
+		}
+	}
+
+	if m.GetNumber() < 1 {
+		return NewSlideValidationError{
+			field:  "Number",
+			reason: "value must be greater than or equal to 1",
+		}
+	}
+
+	// no validation rules for Type
+
+	return nil
+}
+
+// NewSlideValidationError is the validation error returned by
+// NewSlide.Validate if the designated constraints aren't met.
+type NewSlideValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e NewSlideValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e NewSlideValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e NewSlideValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e NewSlideValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e NewSlideValidationError) ErrorName() string { return "NewSlideValidationError" }
+
+// Error satisfies the builtin error interface
+func (e NewSlideValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sNewSlide.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = NewSlideValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = NewSlideValidationError{}
+
 // Validate checks the field values on Slide with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
 func (m *Slide) Validate() error {
@@ -644,24 +1037,24 @@ func (m *Slide) Validate() error {
 		return nil
 	}
 
-	if m.GetSlideId() <= 0 {
+	if m.GetSlideId() < 1 {
 		return SlideValidationError{
 			field:  "SlideId",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 
-	if m.GetPresentationId() <= 0 {
+	if m.GetPresentationId() < 1 {
 		return SlideValidationError{
 			field:  "PresentationId",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 
-	if m.GetNumber() <= 0 {
+	if m.GetNumber() < 1 {
 		return SlideValidationError{
 			field:  "Number",
-			reason: "value must be greater than 0",
+			reason: "value must be greater than or equal to 1",
 		}
 	}
 

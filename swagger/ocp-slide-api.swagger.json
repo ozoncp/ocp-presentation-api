@@ -13,13 +13,13 @@
   "paths": {
     "/v1/slide": {
       "post": {
-        "summary": "Creates a new slide",
-        "operationId": "SlideAPI_CreateSlideV1",
+        "summary": "Updates a slide",
+        "operationId": "SlideAPI_UpdateSlideV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiCreateSlideV1Response"
+              "$ref": "#/definitions/apiUpdateSlideV1Response"
             }
           },
           "default": {
@@ -133,6 +133,27 @@
         "tags": [
           "SlideAPI"
         ]
+      },
+      "post": {
+        "summary": "Creates new slides",
+        "operationId": "SlideAPI_MultiCreateSlidesV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiMultiCreateSlidesV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "SlideAPI"
+        ]
       }
     }
   },
@@ -162,6 +183,31 @@
           "items": {
             "$ref": "#/definitions/apiSlide"
           }
+        }
+      }
+    },
+    "apiMultiCreateSlidesV1Response": {
+      "type": "object",
+      "properties": {
+        "number_of_created_slides": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiNewSlide": {
+      "type": "object",
+      "properties": {
+        "presentation_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "number": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "type": {
+          "$ref": "#/definitions/apiSlideType"
         }
       }
     },
@@ -202,6 +248,14 @@
         "Task"
       ],
       "default": "Question"
+    },
+    "apiUpdateSlideV1Response": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "boolean"
+        }
+      }
     },
     "protobufAny": {
       "type": "object",
