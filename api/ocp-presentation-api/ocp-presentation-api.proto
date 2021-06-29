@@ -23,11 +23,11 @@ service PresentationAPI {
 	}
 
 	// Updates a presentation
-    rpc UpdatePresentationV1(UpdatePresentationV1Request) returns (UpdatePresentationV1Response) {
-        option (google.api.http) = {
-            post: "/v1/presentation"
-        };
-    }
+	rpc UpdatePresentationV1(UpdatePresentationV1Request) returns (UpdatePresentationV1Response) {
+		option (google.api.http) = {
+			post: "/v1/presentation"
+		};
+	}
 
 	// Returns a presentation by id
 	rpc DescribePresentationV1(DescribePresentationV1Request) returns (DescribePresentationV1Response) {

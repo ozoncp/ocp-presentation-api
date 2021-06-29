@@ -20,6 +20,10 @@ const _ = grpc.SupportPackageIsVersion7
 type SlideAPIClient interface {
 	// Creates a new slide
 	CreateSlideV1(ctx context.Context, in *CreateSlideV1Request, opts ...grpc.CallOption) (*CreateSlideV1Response, error)
+	// Creates new slides
+	MultiCreateSlidesV1(ctx context.Context, in *MultiCreateSlidesV1Request, opts ...grpc.CallOption) (*MultiCreateSlidesV1Response, error)
+	// Updates a slide
+	UpdateSlideV1(ctx context.Context, in *UpdateSlideV1Request, opts ...grpc.CallOption) (*UpdateSlideV1Response, error)
 	// Returns a slide by id
 	DescribeSlideV1(ctx context.Context, in *DescribeSlideV1Request, opts ...grpc.CallOption) (*DescribeSlideV1Response, error)
 	// Returns a list of slides
@@ -39,6 +43,24 @@ func NewSlideAPIClient(cc grpc.ClientConnInterface) SlideAPIClient {
 func (c *slideAPIClient) CreateSlideV1(ctx context.Context, in *CreateSlideV1Request, opts ...grpc.CallOption) (*CreateSlideV1Response, error) {
 	out := new(CreateSlideV1Response)
 	err := c.cc.Invoke(ctx, "/ocp.slide.api.SlideAPI/CreateSlideV1", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slideAPIClient) MultiCreateSlidesV1(ctx context.Context, in *MultiCreateSlidesV1Request, opts ...grpc.CallOption) (*MultiCreateSlidesV1Response, error) {
+	out := new(MultiCreateSlidesV1Response)
+	err := c.cc.Invoke(ctx, "/ocp.slide.api.SlideAPI/MultiCreateSlidesV1", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slideAPIClient) UpdateSlideV1(ctx context.Context, in *UpdateSlideV1Request, opts ...grpc.CallOption) (*UpdateSlideV1Response, error) {
+	out := new(UpdateSlideV1Response)
+	err := c.cc.Invoke(ctx, "/ocp.slide.api.SlideAPI/UpdateSlideV1", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,6 +100,10 @@ func (c *slideAPIClient) RemoveSlideV1(ctx context.Context, in *RemoveSlideV1Req
 type SlideAPIServer interface {
 	// Creates a new slide
 	CreateSlideV1(context.Context, *CreateSlideV1Request) (*CreateSlideV1Response, error)
+	// Creates new slides
+	MultiCreateSlidesV1(context.Context, *MultiCreateSlidesV1Request) (*MultiCreateSlidesV1Response, error)
+	// Updates a slide
+	UpdateSlideV1(context.Context, *UpdateSlideV1Request) (*UpdateSlideV1Response, error)
 	// Returns a slide by id
 	DescribeSlideV1(context.Context, *DescribeSlideV1Request) (*DescribeSlideV1Response, error)
 	// Returns a list of slides
@@ -93,6 +119,12 @@ type UnimplementedSlideAPIServer struct {
 
 func (UnimplementedSlideAPIServer) CreateSlideV1(context.Context, *CreateSlideV1Request) (*CreateSlideV1Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSlideV1 not implemented")
+}
+func (UnimplementedSlideAPIServer) MultiCreateSlidesV1(context.Context, *MultiCreateSlidesV1Request) (*MultiCreateSlidesV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MultiCreateSlidesV1 not implemented")
+}
+func (UnimplementedSlideAPIServer) UpdateSlideV1(context.Context, *UpdateSlideV1Request) (*UpdateSlideV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSlideV1 not implemented")
 }
 func (UnimplementedSlideAPIServer) DescribeSlideV1(context.Context, *DescribeSlideV1Request) (*DescribeSlideV1Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeSlideV1 not implemented")
@@ -130,6 +162,42 @@ func _SlideAPI_CreateSlideV1_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SlideAPIServer).CreateSlideV1(ctx, req.(*CreateSlideV1Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SlideAPI_MultiCreateSlidesV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MultiCreateSlidesV1Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SlideAPIServer).MultiCreateSlidesV1(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ocp.slide.api.SlideAPI/MultiCreateSlidesV1",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SlideAPIServer).MultiCreateSlidesV1(ctx, req.(*MultiCreateSlidesV1Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SlideAPI_UpdateSlideV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSlideV1Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SlideAPIServer).UpdateSlideV1(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ocp.slide.api.SlideAPI/UpdateSlideV1",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SlideAPIServer).UpdateSlideV1(ctx, req.(*UpdateSlideV1Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -198,6 +266,14 @@ var SlideAPI_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateSlideV1",
 			Handler:    _SlideAPI_CreateSlideV1_Handler,
+		},
+		{
+			MethodName: "MultiCreateSlidesV1",
+			Handler:    _SlideAPI_MultiCreateSlidesV1_Handler,
+		},
+		{
+			MethodName: "UpdateSlideV1",
+			Handler:    _SlideAPI_UpdateSlideV1_Handler,
 		},
 		{
 			MethodName: "DescribeSlideV1",
