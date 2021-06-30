@@ -5,9 +5,9 @@ import (
 	"net"
 	"os"
 
-	"github.com/ozoncp/ocp-presentation-api/internal/ocp-presentation-api/api"
-	"github.com/ozoncp/ocp-presentation-api/internal/ocp-presentation-api/repo"
-	desc "github.com/ozoncp/ocp-presentation-api/pkg/ocp-presentation-api"
+	"github.com/ozoncp/ocp-presentation-api/internal/ocp-slide-api/api"
+	"github.com/ozoncp/ocp-presentation-api/internal/ocp-slide-api/repo"
+	desc "github.com/ozoncp/ocp-presentation-api/pkg/ocp-slide-api"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -19,10 +19,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-const serviceName = "ocp-presentation-api"
+const serviceName = "ocp-slide-api"
 
 type config struct {
-	Address   string `env:"ADDRESS" envDefault:"0.0.0.0:8000"`
+	Address   string `env:"ADDRESS" envDefault:"0.0.0.0:8001"`
 	Database  string `env:"POSTGRES_DB,unset,notEmpty"`
 	User      string `env:"POSTGRES_USER,unset,notEmpty"`
 	Password  string `env:"POSTGRES_PASSWORD,unset,notEmpty"`
@@ -51,7 +51,7 @@ func runGRPC(cfg *config) error {
 
 	server := grpc.NewServer()
 	reflection.Register(server)
-	desc.RegisterPresentationAPIServer(server, api.NewPresentationAPI(repo, cfg.ChunkSize))
+	desc.RegisterSlideAPIServer(server, api.NewSlideAPI(repo, cfg.ChunkSize))
 
 	listen, err := net.Listen("tcp", cfg.Address)
 	if err != nil {

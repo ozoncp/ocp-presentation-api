@@ -1,14 +1,29 @@
 syntax = "proto3";
-package ocp.slide.api;
 
 import "google/api/annotations.proto";
 import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
+
+package ocp.slide.api;
 
 option go_package = "gihtub.com/ozoncp/ocp-presentation-api/pkg/ocp-slide-api";
 
 service SlideAPI {
 	// Creates a new slide
 	rpc CreateSlideV1(CreateSlideV1Request) returns (CreateSlideV1Response) {
+		option (google.api.http) = {
+			post: "/v1/slide"
+		};
+	}
+
+	// Creates new slides
+	rpc MultiCreateSlidesV1(MultiCreateSlidesV1Request) returns (MultiCreateSlidesV1Response) {
+		option (google.api.http) = {
+			post: "/v1/slides"
+		};
+	}
+
+	// Updates a slide
+	rpc UpdateSlideV1(UpdateSlideV1Request) returns (UpdateSlideV1Response) {
 		option (google.api.http) = {
 			post: "/v1/slide"
 		};
@@ -39,9 +54,7 @@ service SlideAPI {
 ///////////////////////////////////////////////////////////////////////////////
 
 message CreateSlideV1Request {
-	uint64 presentation_id = 1 [(validate.rules).uint64.gt = 0];
-	uint64 number = 2 [(validate.rules).uint64.gt = 0];
-	SlideType type = 3;
+	NewSlide slide = 1 [(validate.rules).message.required = true];
 }
 
 message CreateSlideV1Response {
@@ -50,8 +63,28 @@ message CreateSlideV1Response {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+message MultiCreateSlidesV1Request {
+	repeated NewSlide slides = 1 [(validate.rules).repeated = {min_items: 1, max_items: 1024}];
+}
+
+message MultiCreateSlidesV1Response {
+	int64 number_of_created_slides = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+message UpdateSlideV1Request {
+	Slide slide = 1 [(validate.rules).message.required = true];
+}
+
+message UpdateSlideV1Response {
+	bool found = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 message DescribeSlideV1Request {
-	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
+	uint64 slide_id = 1 [(validate.rules).uint64.gte = 1];
 }
 
 message DescribeSlideV1Response {
@@ -61,7 +94,7 @@ message DescribeSlideV1Response {
 ///////////////////////////////////////////////////////////////////////////////
 
 message ListSlidesV1Request {
-	uint64 limit = 1 [(validate.rules).uint64.gt = 0];
+	uint64 limit = 1 [(validate.rules).uint64 = {gte:1, lte: 1024}];
 	uint64 offset = 2;
 }
 
@@ -72,7 +105,7 @@ message ListSlidesV1Response {
 ///////////////////////////////////////////////////////////////////////////////
 
 message RemoveSlideV1Request {
-	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
+	uint64 slide_id = 1 [(validate.rules).uint64.gte = 1];
 }
 
 message RemoveSlideV1Response {
@@ -81,16 +114,22 @@ message RemoveSlideV1Response {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-enum SlideType {
+enum ContentType {
 	Question = 0;
 	Video = 1;
 	Document = 2;
 	Task = 3;
 }
 
+message NewSlide {
+	uint64 presentation_id = 1 [(validate.rules).uint64.gte = 1];
+	uint64 number = 2 [(validate.rules).uint64.gte = 1];
+	ContentType type = 3;
+}
+
 message Slide {
-	uint64 slide_id = 1 [(validate.rules).uint64.gt = 0];
-	uint64 presentation_id = 2 [(validate.rules).uint64.gt = 0];
-	uint64 number = 3 [(validate.rules).uint64.gt = 0];
-	SlideType type = 4;
+	uint64 id = 1 [(validate.rules).uint64.gte = 1];
+	uint64 presentation_id = 2 [(validate.rules).uint64.gte = 1];
+	uint64 number = 3 [(validate.rules).uint64.gte = 1];
+	ContentType type = 4;
 }

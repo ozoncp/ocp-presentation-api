@@ -159,13 +159,13 @@
         "tags": [
           "SlideAPI"
         ],
-        "summary": "Creates a new slide",
-        "operationId": "SlideAPI_CreateSlideV1",
+        "summary": "Updates a slide",
+        "operationId": "SlideAPI_UpdateSlideV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiCreateSlideV1Response"
+              "$ref": "#/definitions/apiUpdateSlideV1Response"
             }
           },
           "default": {
@@ -274,10 +274,41 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "SlideAPI"
+        ],
+        "summary": "Creates new slides",
+        "operationId": "SlideAPI_MultiCreateSlidesV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiMultiCreateSlidesV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        }
       }
     }
   },
   "definitions": {
+    "apiContentType": {
+      "type": "string",
+      "default": "Question",
+      "enum": [
+        "Question",
+        "Video",
+        "Document",
+        "Task"
+      ]
+    },
     "apiCreatePresentationV1Response": {
       "type": "object",
       "properties": {
@@ -343,6 +374,15 @@
         }
       }
     },
+    "apiMultiCreateSlidesV1Response": {
+      "type": "object",
+      "properties": {
+        "number_of_created_slides": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "apiNewPresentation": {
       "type": "object",
       "properties": {
@@ -359,6 +399,22 @@
         "user_id": {
           "type": "string",
           "format": "uint64"
+        }
+      }
+    },
+    "apiNewSlide": {
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "presentation_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "type": {
+          "$ref": "#/definitions/apiContentType"
         }
       }
     },
@@ -404,6 +460,10 @@
     "apiSlide": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
         "number": {
           "type": "string",
           "format": "uint64"
@@ -412,26 +472,20 @@
           "type": "string",
           "format": "uint64"
         },
-        "slide_id": {
-          "type": "string",
-          "format": "uint64"
-        },
         "type": {
-          "$ref": "#/definitions/apiSlideType"
+          "$ref": "#/definitions/apiContentType"
         }
       }
     },
-    "apiSlideType": {
-      "type": "string",
-      "default": "Question",
-      "enum": [
-        "Question",
-        "Video",
-        "Document",
-        "Task"
-      ]
-    },
     "apiUpdatePresentationV1Response": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "boolean"
+        }
+      }
+    },
+    "apiUpdateSlideV1Response": {
       "type": "object",
       "properties": {
         "found": {

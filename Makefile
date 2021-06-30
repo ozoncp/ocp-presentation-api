@@ -50,8 +50,10 @@ PHONY: .build
 .build:
 ifeq ($(OS), Windows_NT)
 	CGO_ENABLED=0 GOOS=windows go build -o bin/ocp-presentation-api.exe cmd/ocp-presentation-api/main.go
+	CGO_ENABLED=0 GOOS=windows go build -o bin/ocp-slide-api.exe cmd/ocp-slide-api/main.go
 else
 	CGO_ENABLED=0 GOOS=linux go build -o bin/ocp-presentation-api cmd/ocp-presentation-api/main.go
+	CGO_ENABLED=0 GOOS=linux go build -o bin/ocp-slide-api cmd/ocp-slide-api/main.go
 endif
 
 .PHONY: requirements

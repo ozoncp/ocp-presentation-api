@@ -103,6 +103,31 @@ services:
       - backend
     restart: unless-stopped
 
+    ocp-slide-api:
+      build: .
+      environment:
+        ADDRESS: 0.0.0.0:8001
+
+        POSTGRES_DB: ocp_presentation_api
+        POSTGRES_USER: ${POSTGRES_USER:-postgres}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+        POSTGRES_HOST: postgres
+        POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+
+        CHUNK_SIZE: 10
+
+        KAFKA_BROKERS: "[kafka:9094]"
+
+        JAEGER_AGENT_HOST: jaeger
+        JAEGER_AGENT_PORT: 6831
+      depends_on:
+        - postgres
+      ports:
+        - ${PORT:-8001}:8001
+      networks:
+        - backend
+      restart: unless-stopped
+
 networks:
   backend:
     driver: bridge
