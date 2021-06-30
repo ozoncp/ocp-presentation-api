@@ -18,6 +18,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var ErrInvalidArgument = errors.New("invalid argument")
+
 type api struct {
 	desc.UnimplementedPresentationAPIServer
 	repo      repo.Repo
@@ -26,7 +28,7 @@ type api struct {
 
 func NewPresentationAPI(repo repo.Repo, chunkSize uint) desc.PresentationAPIServer {
 	if chunkSize == 0 {
-		panic("invalid argument")
+		panic(ErrInvalidArgument)
 	}
 
 	return &api{

@@ -26,7 +26,7 @@ linters-settings:
   golint:
     min-confidence: 0
   dupl:
-    threshold: 100
+    threshold: 200
   goconst:
     min-len:         2
     min-occurrences: 2

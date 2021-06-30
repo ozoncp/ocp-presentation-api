@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/ozoncp/ocp-presentation-api/internal/ocp-presentation-api/mock"
-	"github.com/ozoncp/ocp-presentation-api/internal/ocp-presentation-api/model"
-	"github.com/ozoncp/ocp-presentation-api/internal/ocp-presentation-api/saver"
+	"github.com/ozoncp/ocp-presentation-api/internal/ocp-slide-api/mock"
+	"github.com/ozoncp/ocp-presentation-api/internal/ocp-slide-api/model"
+	"github.com/ozoncp/ocp-presentation-api/internal/ocp-slide-api/saver"
 
 	"github.com/golang/mock/gomock"
 
@@ -32,10 +32,9 @@ var _ = Describe("Saver", func() {
 		alarms chan struct{}
 		s      saver.Saver
 
-		presentation = model.Presentation{
-			ID:       1,
-			LessonID: 1,
-			UserID:   1,
+		slide = model.Slide{
+			ID:             1,
+			PresentationID: 1,
 		}
 	)
 
@@ -54,7 +53,7 @@ var _ = Describe("Saver", func() {
 
 	JustBeforeEach(func() {
 		s.Init(ctx)
-		err = s.Save(ctx, presentation)
+		err = s.Save(ctx, slide)
 	})
 
 	AfterEach(func() {

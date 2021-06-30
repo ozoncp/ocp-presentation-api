@@ -10,8 +10,7 @@ import (
 	"github.com/ozoncp/ocp-presentation-api/internal/ocp-presentation-api/model"
 )
 
-const duration = 50 * time.Millisecond
-
+// Saver is the interface that wraps the methods which save presentations asynchronous.
 type Saver interface {
 	Init(ctx context.Context)
 	Save(ctx context.Context, presentation model.Presentation) error
@@ -20,12 +19,14 @@ type Saver interface {
 
 type saver struct {
 	presentation chan model.Presentation
+	duration     time.Duration
 	alarm        alarm.Alarm
 	flusher      flusher.Flusher
 	done         chan struct{}
 }
 
-func NewSaver(capacity int, alarm alarm.Alarm, flusher flusher.Flusher) Saver {
+// NewSaver returns the Saver interface
+func NewSaver(capacity uint, duration time.Duration, alarm alarm.Alarm, flusher flusher.Flusher) Saver {
 	presentation := make(chan model.Presentation, capacity)
 	done := make(chan struct{})
 
@@ -45,7 +46,7 @@ func (s *saver) Save(ctx context.Context, presentation model.Presentation) error
 	for {
 		select {
 		case <-ctx.Done():
-			return nil
+			return ctx.Err()
 		case s.presentation <- presentation:
 			return nil
 		}
@@ -72,7 +73,7 @@ func (s *saver) flushing(ctx context.Context) {
 			presentations, _ = s.flusher.Flush(ctx, presentations)
 
 		default:
-			time.Sleep(duration)
+			time.Sleep(s.duration)
 		}
 	}
 }

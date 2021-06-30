@@ -3,6 +3,7 @@ package api_test
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 
@@ -21,54 +22,48 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var errDatabaseConnection = errors.New("error establishing a database connection")
+
 var _ = Describe("Presentation API Server", func() {
+	const (
+		n              = 10
+		numberOfFields = 4
+		chunkSize      = 1024
+	)
+
 	var (
-		err error
-
-		ctx context.Context
-
 		db     *sql.DB
 		sqlxDB *sqlx.DB
 		mock   sqlmock.Sqlmock
 
-		presentations = []model.Presentation{
-			{ID: 1, Name: "1"},
-			{ID: 2, Name: "2"},
-			{ID: 3, Name: "3"},
-			{ID: 4, Name: "4"},
-			{ID: 5, Name: "5"},
-			{ID: 6, Name: "6"},
-			{ID: 7, Name: "7"},
-			{ID: 8, Name: "8"},
-			{ID: 9, Name: "9"},
-			{ID: 10, Name: "10"},
-		}
-
+		ctx        context.Context
 		repository repo.Repo
 		server     desc.PresentationAPIServer
 
-		createRequest  *desc.CreatePresentationV1Request
-		createResponse *desc.CreatePresentationV1Response
-
-		describeRequest  *desc.DescribePresentationV1Request
-		describeResponse *desc.DescribePresentationV1Response
-
-		listRequest  *desc.ListPresentationsV1Request
-		listResponse *desc.ListPresentationsV1Response
-
-		removeRequest  *desc.RemovePresentationV1Request
-		removeResponse *desc.RemovePresentationV1Response
+		presentations = []model.Presentation{
+			{ID: 1, LessonID: 1, UserID: 1},
+			{ID: 2, LessonID: 2, UserID: 2},
+			{ID: 3, LessonID: 3, UserID: 3},
+			{ID: 4, LessonID: 4, UserID: 4},
+			{ID: 5, LessonID: 5, UserID: 5},
+			{ID: 6, LessonID: 6, UserID: 6},
+			{ID: 7, LessonID: 7, UserID: 7},
+			{ID: 8, LessonID: 8, UserID: 8},
+			{ID: 9, LessonID: 9, UserID: 9},
+			{ID: 10, LessonID: 10, UserID: 10},
+		}
 	)
 
 	BeforeEach(func() {
-		ctx = context.Background()
+		var err error
 
 		db, mock, err = sqlmock.New()
 		Expect(err).Should(BeNil())
 		sqlxDB = sqlx.NewDb(db, "sqlmock")
 
+		ctx = context.Background()
 		repository = repo.NewRepo(sqlxDB)
-		server = api.NewPresentationAPI(repository, 2)
+		server = api.NewPresentationAPI(repository, chunkSize)
 	})
 
 	JustBeforeEach(func() {
@@ -76,300 +71,851 @@ var _ = Describe("Presentation API Server", func() {
 
 	AfterEach(func() {
 		mock.ExpectClose()
-		err = db.Close()
+		err := db.Close()
 		Expect(err).Should(BeNil())
 	})
 
-	// CreatePresentationV1
-
-	Context("creating a presentation", func() {
-		var id uint64 = 1
-
-		BeforeEach(func() {
-			createRequest = &desc.CreatePresentationV1Request{
-				Presentation: &desc.NewPresentation{
-					UserId:      1,
-					LessonId:    1,
-					Name:        "Presentation",
-					Description: "Description",
-				},
-			}
-
-			rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
-			mock.ExpectQuery("INSERT INTO presentation").WithArgs(
-				createRequest.Presentation.UserId,
-				createRequest.Presentation.LessonId,
-				createRequest.Presentation.Name,
-				createRequest.Presentation.Description).
-				WillReturnRows(rows)
-
-			createResponse, err = server.CreatePresentationV1(ctx, createRequest)
-		})
-
-		It("should work well", func() {
-			Expect(err).Should(BeNil())
-			Expect(createResponse.PresentationId).Should(Equal(id))
-		})
-	})
-
-	Context("creating a presentation with an invalid argument", func() {
-		BeforeEach(func() {
-			createRequest = &desc.CreatePresentationV1Request{}
-			createResponse, err = server.CreatePresentationV1(ctx, createRequest)
-		})
-
-		It("should be an error", func() {
-			Expect(createResponse).Should(BeNil())
-			Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
-		})
-	})
-
-	Context("no database connecting", func() {
-		BeforeEach(func() {
-			createRequest = &desc.CreatePresentationV1Request{
-				Presentation: &desc.NewPresentation{
-					UserId:      1,
-					LessonId:    1,
-					Name:        "Presentation",
-					Description: "Description",
-				},
-			}
-
-			mock.ExpectQuery("INSERT INTO presentation").WithArgs(
-				createRequest.Presentation.UserId,
-				createRequest.Presentation.LessonId,
-				createRequest.Presentation.Name,
-				createRequest.Presentation.Description).
-				WillReturnError(errors.New("bad connection"))
-
-			createResponse, err = server.CreatePresentationV1(ctx, createRequest)
-		})
-
-		It("should be an error", func() {
-			Expect(createResponse).Should(BeNil())
-			Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
-		})
-	})
-
 	// ////////////////////////////////////////////////////////////////////////
 
-	Context("describing a presentation", func() {
-		presentation := model.Presentation{
-			ID:          1,
-			LessonID:    2,
-			UserID:      3,
-			Name:        "Name",
-			Description: "Description",
+	Context("when a client creates the new presentation successfully", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.CreatePresentationV1Request
+				response *desc.CreatePresentationV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.CreatePresentationV1Request{
+					Presentation: &desc.NewPresentation{
+						LessonId:    presentation.LessonID,
+						UserId:      presentation.UserID,
+						Name:        presentation.Name,
+						Description: presentation.Description,
+					},
+				}
+
+				rows := sqlmock.NewRows([]string{
+					"id",
+				})
+				rows.AddRow(presentation.ID)
+
+				query := mock.ExpectQuery("INSERT INTO presentation")
+				query.WithArgs(
+					request.Presentation.LessonId,
+					request.Presentation.UserId,
+					request.Presentation.Name,
+					request.Presentation.Description,
+				)
+				query.WillReturnRows(rows)
+
+				response, err = server.CreatePresentationV1(ctx, request)
+			})
+
+			It("should return an ID correctly", func() {
+				Expect(response.PresentationId).To(Equal(presentation.ID))
+			})
+
+			It("should not be an error", func() {
+				Expect(err).Should(BeNil())
+			})
 		}
-
-		BeforeEach(func() {
-			describeRequest = &desc.DescribePresentationV1Request{
-				PresentationId: presentation.ID,
-			}
-
-			rows := sqlmock.NewRows([]string{
-				"id", "lesson_id", "user_id", "name", "description"}).AddRow(
-				presentation.ID,
-				presentation.LessonID,
-				presentation.UserID,
-				presentation.Name,
-				presentation.Description)
-
-			mock.ExpectQuery("SELECT (.+) FROM presentation WHERE").
-				WithArgs(describeRequest.PresentationId).
-				WillReturnRows(rows)
-
-			describeResponse, err = server.DescribePresentationV1(ctx, describeRequest)
-		})
-
-		It("should work well", func() {
-			Expect(presentation.ID).Should(BeEquivalentTo(describeResponse.Presentation.Id))
-			Expect(presentation.LessonID).Should(BeEquivalentTo(describeResponse.Presentation.LessonId))
-			Expect(presentation.UserID).Should(Equal(describeResponse.Presentation.UserId))
-			Expect(presentation.Name).Should(Equal(describeResponse.Presentation.Name))
-			Expect(presentation.Description).Should(Equal(describeResponse.Presentation.Description))
-			Expect(err).Should(BeNil())
-		})
 	})
 
-	Context("describing a presentation with an invalid argument", func() {
-		BeforeEach(func() {
-			describeRequest = &desc.DescribePresentationV1Request{}
-			describeResponse, err = server.DescribePresentationV1(ctx, describeRequest)
-		})
+	Context("when a client creates the new presentation unsuccessfully because of an invalid argument", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.CreatePresentationV1Request
+				response *desc.CreatePresentationV1Response
+			)
 
-		It("should be an error", func() {
-			Expect(describeResponse).Should(BeNil())
-			Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
-		})
+			BeforeEach(func() {
+				request = &desc.CreatePresentationV1Request{
+					Presentation: &desc.NewPresentation{
+						LessonId:    0 * presentation.LessonID,
+						UserId:      0 * presentation.UserID,
+						Name:        presentation.Name,
+						Description: presentation.Description,
+					},
+				}
+				response, err = server.CreatePresentationV1(ctx, request)
+			})
+
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return an invalid argument error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
+			})
+		}
 	})
 
-	Context("no database connecting", func() {
-		var id uint64 = 1
+	Context("when a client creates the new presentation unsuccessfully because of a database connection error", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.CreatePresentationV1Request
+				response *desc.CreatePresentationV1Response
+			)
 
-		BeforeEach(func() {
-			describeRequest = &desc.DescribePresentationV1Request{PresentationId: id}
+			BeforeEach(func() {
+				request = &desc.CreatePresentationV1Request{
+					Presentation: &desc.NewPresentation{
+						LessonId:    presentation.LessonID,
+						UserId:      presentation.UserID,
+						Name:        presentation.Name,
+						Description: presentation.Description,
+					},
+				}
 
-			mock.ExpectQuery("SELECT (.+) FROM presentation WHERE").
-				WithArgs(describeRequest.PresentationId).
-				WillReturnError(errors.New("bad connection"))
+				query := mock.ExpectQuery("INSERT INTO presentation")
+				query.WithArgs(
+					request.Presentation.LessonId,
+					request.Presentation.UserId,
+					request.Presentation.Name,
+					request.Presentation.Description,
+				)
+				query.WillReturnError(errDatabaseConnection)
 
-			describeResponse, err = server.DescribePresentationV1(ctx, describeRequest)
-		})
+				response, err = server.CreatePresentationV1(ctx, request)
+			})
 
-		It("should be an error", func() {
-			Expect(describeResponse).Should(BeNil())
-			Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
-		})
-	})
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
 
-	// ////////////////////////////////////////////////////////////////////////
-
-	Context("the list of presentations", func() {
-		var (
-			limit  uint64 = 10
-			offset uint64 = 0
-		)
-
-		BeforeEach(func() {
-			listRequest = &desc.ListPresentationsV1Request{
-				Limit:  limit,
-				Offset: offset,
-			}
-
-			rows := sqlmock.NewRows([]string{"id", "lesson_id", "user_id", "name", "description"}).
-				AddRow(
-					presentations[0].ID,
-					presentations[0].LessonID,
-					presentations[0].UserID,
-					presentations[0].Name,
-					presentations[0].Description).
-				AddRow(
-					presentations[1].ID,
-					presentations[1].LessonID,
-					presentations[1].UserID,
-					presentations[1].Name,
-					presentations[1].Description)
-
-			mock.ExpectQuery(
-				fmt.Sprintf("SELECT id, lesson_id, user_id, name, description FROM presentation LIMIT %d OFFSET %d",
-					limit, offset)).
-				WillReturnRows(rows)
-
-			listResponse, err = server.ListPresentationsV1(ctx, listRequest)
-		})
-
-		It("should work well", func() {
-			Expect(err).Should(BeNil())
-			Expect(len(listResponse.Presentations)).Should(Equal(2))
-		})
+			It("should return a resource exhausted error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
+			})
+		}
 	})
 
 	// ////////////////////////////////////////////////////////////////////////
 
-	Context("the list of presentations with an invalid argument", func() {
-		BeforeEach(func() {
-			removeRequest = &desc.RemovePresentationV1Request{}
-			removeResponse, err = server.RemovePresentationV1(ctx, removeRequest)
-		})
+	Context("when a client creates multiple presentations successfully", func() {
+		for i := 0; i < n; i++ {
+			var (
+				err          error
+				lastInsertID int64
+				rowsAffected int64
+				request      *desc.MultiCreatePresentationsV1Request
+				response     *desc.MultiCreatePresentationsV1Response
+			)
 
-		It("should be an error", func() {
-			Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
-		})
+			BeforeEach(func() {
+				rowsAffected = int64(len(presentations))
+				values := make([]driver.Value, numberOfFields*rowsAffected)
+				newPresentations := make([]*desc.NewPresentation, len(presentations))
+
+				for i, presentation := range presentations {
+					lastInsertID = int64(i)
+
+					newPresentations[i] = &desc.NewPresentation{
+						LessonId:    presentation.LessonID,
+						UserId:      presentation.UserID,
+						Name:        presentation.Name,
+						Description: presentation.Description,
+					}
+
+					values[numberOfFields*i] = presentation.LessonID
+					values[numberOfFields*i+1] = presentation.UserID
+					values[numberOfFields*i+2] = presentation.Name
+					values[numberOfFields*i+3] = presentation.Description
+				}
+
+				request = &desc.MultiCreatePresentationsV1Request{
+					Presentations: newPresentations,
+				}
+
+				mock.ExpectExec("INSERT INTO presentation").
+					WithArgs(values...).
+					WillReturnResult(sqlmock.NewResult(lastInsertID, rowsAffected))
+
+				response, err = server.MultiCreatePresentationsV1(ctx, request)
+			})
+
+			It("should return a number of the created presentations correctly", func() {
+				Expect(response.NumberOfCreatedPresentations).Should(BeEquivalentTo(len(presentations)))
+			})
+
+			It("should not be an error", func() {
+				Expect(err).Should(BeNil())
+			})
+		}
 	})
 
-	Context("no database connecting", func() {
-		var (
-			limit  uint64 = 10
-			offset uint64 = 0
+	Context("when a client creates multiple presentations unsuccessfully because of an invalid argument", func() {
+		for i := 0; i < n; i++ {
+			var (
+				err      error
+				request  *desc.MultiCreatePresentationsV1Request
+				response *desc.MultiCreatePresentationsV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.MultiCreatePresentationsV1Request{
+					Presentations: nil,
+				}
+
+				response, err = server.MultiCreatePresentationsV1(ctx, request)
+			})
+
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return an invalid argument error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
+			})
+		}
+	})
+
+	Context("when a client creates multiple presentations unsuccessfully because of a database connection error", func() {
+		for i := 0; i < n; i++ {
+			var (
+				err          error
+				rowsAffected int64
+				request      *desc.MultiCreatePresentationsV1Request
+				response     *desc.MultiCreatePresentationsV1Response
+			)
+
+			BeforeEach(func() {
+				rowsAffected = int64(len(presentations))
+				values := make([]driver.Value, numberOfFields*rowsAffected)
+				newPresentations := make([]*desc.NewPresentation, len(presentations))
+
+				for i, presentation := range presentations {
+					newPresentations[i] = &desc.NewPresentation{
+						LessonId:    presentation.LessonID,
+						UserId:      presentation.UserID,
+						Name:        presentation.Name,
+						Description: presentation.Description,
+					}
+
+					values[numberOfFields*i] = presentation.LessonID
+					values[numberOfFields*i+1] = presentation.UserID
+					values[numberOfFields*i+2] = presentation.Name
+					values[numberOfFields*i+3] = presentation.Description
+				}
+
+				request = &desc.MultiCreatePresentationsV1Request{
+					Presentations: newPresentations,
+				}
+
+				mock.ExpectExec("INSERT INTO presentation").
+					WithArgs(values...).
+					WillReturnError(errDatabaseConnection)
+
+				response, err = server.MultiCreatePresentationsV1(ctx, request)
+			})
+
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return a resource exhausted error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
+			})
+		}
+	})
+
+	// ////////////////////////////////////////////////////////////////////////
+
+	Context("when a client updates the presentation successfully", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.UpdatePresentationV1Request
+				response *desc.UpdatePresentationV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.UpdatePresentationV1Request{
+					Presentation: &desc.Presentation{
+						Id:          presentation.ID,
+						LessonId:    presentation.LessonID,
+						UserId:      presentation.UserID,
+						Name:        presentation.Name,
+						Description: presentation.Description,
+					},
+				}
+
+				query := mock.ExpectExec("UPDATE presentation SET")
+				query.WithArgs(
+					presentation.LessonID,
+					presentation.UserID,
+					presentation.Name,
+					presentation.Description,
+					presentation.ID,
+				)
+				query.WillReturnResult(sqlmock.NewResult(1, 1))
+
+				response, err = server.UpdatePresentationV1(ctx, request)
+			})
+
+			It("should return true the presentation correctly", func() {
+				Expect(response.Found).Should(BeTrue())
+			})
+
+			It("should not be an error", func() {
+				Expect(err).Should(BeNil())
+			})
+		}
+	})
+
+	Context("when a client updates the presentation unsuccessfully", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.UpdatePresentationV1Request
+				response *desc.UpdatePresentationV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.UpdatePresentationV1Request{
+					Presentation: &desc.Presentation{
+						Id:          presentation.ID,
+						LessonId:    presentation.LessonID,
+						UserId:      presentation.UserID,
+						Name:        presentation.Name,
+						Description: presentation.Description,
+					},
+				}
+
+				query := mock.ExpectExec("UPDATE presentation SET")
+				query.WithArgs(
+					presentation.LessonID,
+					presentation.UserID,
+					presentation.Name,
+					presentation.Description,
+					presentation.ID,
+				)
+				query.WillReturnResult(sqlmock.NewResult(0, 0))
+
+				response, err = server.UpdatePresentationV1(ctx, request)
+			})
+
+			It("should be an empty response", func() {
+				Expect(response).To(BeNil())
+			})
+
+			It("should return a not found error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.NotFound))
+			})
+		}
+	})
+
+	Context("when a client updates the presentation unsuccessfully because of an invalid argument", func() {
+		for i := 0; i < n; i++ {
+			var (
+				err      error
+				request  *desc.UpdatePresentationV1Request
+				response *desc.UpdatePresentationV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.UpdatePresentationV1Request{
+					Presentation: &desc.Presentation{
+						Id:          0,
+						LessonId:    0,
+						UserId:      0,
+						Name:        "",
+						Description: "",
+					},
+				}
+				response, err = server.UpdatePresentationV1(ctx, request)
+			})
+
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return an invalid argument error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
+			})
+		}
+	})
+
+	Context("when a client updates the presentation unsuccessfully because of a database connection error", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.UpdatePresentationV1Request
+				response *desc.UpdatePresentationV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.UpdatePresentationV1Request{
+					Presentation: &desc.Presentation{
+						Id:          presentation.ID,
+						LessonId:    presentation.LessonID,
+						UserId:      presentation.UserID,
+						Name:        presentation.Name,
+						Description: presentation.Description,
+					},
+				}
+
+				query := mock.ExpectExec("UPDATE presentation SET")
+				query.WithArgs(
+					presentation.LessonID,
+					presentation.UserID,
+					presentation.Name,
+					presentation.Description,
+					presentation.ID,
+				)
+				query.WillReturnError(errDatabaseConnection)
+
+				response, err = server.UpdatePresentationV1(ctx, request)
+			})
+
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return a resource exhausted error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
+			})
+		}
+	})
+
+	// ////////////////////////////////////////////////////////////////////////
+
+	Context("when a client gets the presentation successfully", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.DescribePresentationV1Request
+				response *desc.DescribePresentationV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.DescribePresentationV1Request{
+					PresentationId: presentation.ID,
+				}
+
+				rows := sqlmock.NewRows([]string{
+					"id",
+					"lesson_id",
+					"user_id",
+					"name",
+					"description",
+				})
+
+				rows.AddRow(
+					presentation.ID,
+					presentation.LessonID,
+					presentation.UserID,
+					presentation.Name,
+					presentation.Description,
+				)
+
+				mock.ExpectQuery("SELECT (.+) FROM presentation WHERE").
+					WithArgs(request.PresentationId).
+					WillReturnRows(rows)
+
+				response, err = server.DescribePresentationV1(ctx, request)
+			})
+
+			It("should populate the presentation correctly", func() {
+				Expect(response.Presentation.Id).Should(BeEquivalentTo(presentation.ID))
+				Expect(response.Presentation.LessonId).Should(BeEquivalentTo(presentation.LessonID))
+				Expect(response.Presentation.UserId).Should(Equal(presentation.UserID))
+				Expect(response.Presentation.Name).Should(Equal(presentation.Name))
+				Expect(response.Presentation.Description).Should(Equal(presentation.Description))
+			})
+
+			It("should not be an error", func() {
+				Expect(err).Should(BeNil())
+			})
+		}
+	})
+
+	Context("when a client gets the presentation unsuccessfully", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.DescribePresentationV1Request
+				response *desc.DescribePresentationV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.DescribePresentationV1Request{
+					PresentationId: presentation.ID,
+				}
+
+				query := mock.ExpectQuery("SELECT id, lesson_id, user_id, name, description FROM presentation WHERE")
+				query.WithArgs(
+					presentation.ID,
+				)
+				query.WillReturnError(sql.ErrNoRows)
+
+				response, err = server.DescribePresentationV1(ctx, request)
+			})
+
+			It("should be an empty response", func() {
+				Expect(response).To(BeNil())
+			})
+
+			It("should return a not found error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.NotFound))
+			})
+		}
+	})
+
+	Context("when a client gets the presentation unsuccessfully because of an invalid argument", func() {
+		for i := 0; i < n; i++ {
+			var (
+				err      error
+				request  *desc.DescribePresentationV1Request
+				response *desc.DescribePresentationV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.DescribePresentationV1Request{
+					PresentationId: 0,
+				}
+				response, err = server.DescribePresentationV1(ctx, request)
+			})
+
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return an invalid argument error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
+			})
+		}
+	})
+
+	Context("when a client gets the presentation unsuccessfully because of a database connection error", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.DescribePresentationV1Request
+				response *desc.DescribePresentationV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.DescribePresentationV1Request{
+					PresentationId: presentation.ID,
+				}
+
+				mock.ExpectQuery("SELECT (.+) FROM presentation WHERE").
+					WithArgs(request.PresentationId).
+					WillReturnError(errDatabaseConnection)
+
+				response, err = server.DescribePresentationV1(ctx, request)
+			})
+
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return a resource exhausted error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
+			})
+		}
+	})
+
+	// ////////////////////////////////////////////////////////////////////////
+
+	Context("when a client gets the list successfully", func() {
+		const (
+			maxLimit = 15
+			offset   = 0
 		)
 
-		BeforeEach(func() {
-			listRequest = &desc.ListPresentationsV1Request{
-				Limit:  limit,
-				Offset: offset,
-			}
+		for limit := 1; limit <= maxLimit; limit++ {
+			limit := limit
+			var (
+				err      error
+				request  *desc.ListPresentationsV1Request
+				response *desc.ListPresentationsV1Response
+			)
 
-			mock.ExpectQuery(
-				fmt.Sprintf(
+			BeforeEach(func() {
+				request = &desc.ListPresentationsV1Request{
+					Limit: uint64(limit),
+				}
+
+				rows := sqlmock.NewRows([]string{
+					"id",
+					"lesson_id",
+					"user_id",
+					"name",
+					"description",
+				})
+
+				for i, presentation := range presentations {
+					if i == limit {
+						break
+					}
+					rows.AddRow(
+						presentation.ID,
+						presentation.LessonID,
+						presentation.UserID,
+						presentation.Name,
+						presentation.Description,
+					)
+				}
+
+				query := fmt.Sprintf(
 					"SELECT id, lesson_id, user_id, name, description FROM presentation LIMIT %d OFFSET %d",
-					limit, offset)).
-				WillReturnError(errors.New("bad connection"))
+					limit,
+					offset)
+				mock.ExpectQuery(query).WillReturnRows(rows)
 
-			listResponse, err = server.ListPresentationsV1(ctx, listRequest)
-		})
+				response, err = server.ListPresentationsV1(ctx, request)
+			})
 
-		It("should be an error", func() {
-			Expect(listResponse).Should(BeNil())
-			Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
-		})
+			It("should populate the response correctly", func() {
+				Expect(len(response.Presentations)).Should(BeEquivalentTo(min(limit, len(presentations))))
+			})
+
+			It("should not be an error", func() {
+				Expect(err).Should(BeNil())
+			})
+		}
+	})
+
+	Context("when a client gets the list unsuccessfully", func() {
+		const (
+			limit  = 10
+			offset = 0
+		)
+
+		for i := 0; i < n; i++ {
+			var (
+				err      error
+				request  *desc.ListPresentationsV1Request
+				response *desc.ListPresentationsV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.ListPresentationsV1Request{
+					Limit:  limit,
+					Offset: offset,
+				}
+
+				query := fmt.Sprintf(
+					"SELECT id, lesson_id, user_id, name, description FROM presentation LIMIT %d OFFSET %d",
+					limit,
+					offset)
+				mock.ExpectQuery(query).WillReturnError(sql.ErrNoRows)
+
+				response, err = server.ListPresentationsV1(ctx, request)
+			})
+
+			It("should be an empty response", func() {
+				Expect(response).To(BeNil())
+			})
+
+			It("should return a not found error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.NotFound))
+			})
+		}
+	})
+
+	Context("when a client gets the list unsuccessfully because of an invalid argument", func() {
+		for i := 0; i < n; i++ {
+			var (
+				err      error
+				request  *desc.ListPresentationsV1Request
+				response *desc.ListPresentationsV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.ListPresentationsV1Request{
+					Limit:  0,
+					Offset: 0,
+				}
+				response, err = server.ListPresentationsV1(ctx, request)
+			})
+
+			It("should be an empty response", func() {
+				Expect(response).To(BeNil())
+			})
+
+			It("should return an invalid argument error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
+			})
+		}
+	})
+
+	Context("when a client gets the list unsuccessfully because of a database connection error", func() {
+		const (
+			limit  = 10
+			offset = 0
+		)
+
+		for i := 0; i < n; i++ {
+			var (
+				err      error
+				request  *desc.ListPresentationsV1Request
+				response *desc.ListPresentationsV1Response
+			)
+
+			BeforeEach(func() {
+				request = &desc.ListPresentationsV1Request{
+					Limit:  limit,
+					Offset: offset,
+				}
+
+				query := mock.ExpectQuery(fmt.Sprintf(
+					"SELECT id, lesson_id, user_id, name, description FROM presentation LIMIT %d OFFSET %d",
+					limit,
+					offset))
+				query.WillReturnError(errDatabaseConnection)
+
+				response, err = server.ListPresentationsV1(ctx, request)
+			})
+
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return a resource exhausted error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
+			})
+		}
 	})
 
 	// ////////////////////////////////////////////////////////////////////////
 
-	Context("removing a presentation", func() {
-		var id uint64 = 1
+	Context("when a client removes the presentation successfully", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.RemovePresentationV1Request
+				response *desc.RemovePresentationV1Response
+			)
 
-		BeforeEach(func() {
-			removeRequest = &desc.RemovePresentationV1Request{
-				PresentationId: id,
-			}
+			BeforeEach(func() {
+				request = &desc.RemovePresentationV1Request{
+					PresentationId: presentation.ID,
+				}
 
-			mock.ExpectExec("DELETE FROM presentation").
-				WithArgs(removeRequest.PresentationId).WillReturnResult(sqlmock.NewResult(0, 1))
+				mock.ExpectExec("DELETE FROM presentation").
+					WithArgs(request.PresentationId).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 
-			removeResponse, err = server.RemovePresentationV1(ctx, removeRequest)
-		})
+				response, err = server.RemovePresentationV1(ctx, request)
+			})
 
-		It("should work well", func() {
-			Expect(removeResponse.Found).Should(Equal(true))
-			Expect(err).Should(BeNil())
-		})
+			It("should return true", func() {
+				Expect(response.Found).To(BeTrue())
+			})
+
+			It("should not be an error", func() {
+				Expect(err).Should(BeNil())
+			})
+		}
 	})
 
-	Context("removing a nonexistent presentation", func() {
-		var id uint64 = 1
+	Context("when a client removes the presentation unsuccessfully", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.RemovePresentationV1Request
+				response *desc.RemovePresentationV1Response
+			)
 
-		BeforeEach(func() {
-			removeRequest = &desc.RemovePresentationV1Request{PresentationId: id}
+			BeforeEach(func() {
+				request = &desc.RemovePresentationV1Request{
+					PresentationId: presentation.ID,
+				}
 
-			mock.ExpectExec("DELETE FROM presentation").
-				WithArgs(removeRequest.PresentationId).WillReturnResult(sqlmock.NewResult(0, 0))
+				mock.ExpectExec("DELETE FROM presentation").
+					WithArgs(request.PresentationId).
+					WillReturnResult(sqlmock.NewResult(0, 0))
 
-			removeResponse, err = server.RemovePresentationV1(ctx, removeRequest)
-		})
+				response, err = server.RemovePresentationV1(ctx, request)
+			})
 
-		It("should work well", func() {
-			Expect(removeResponse.Found).Should(BeFalse())
-			Expect(status.Convert(err).Code()).Should(BeEquivalentTo(codes.NotFound))
-		})
+			It("should return false", func() {
+				Expect(response.Found).To(BeFalse())
+			})
+
+			It("should return a not found error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.NotFound))
+			})
+		}
 	})
 
-	Context("removing a presentation with an invalid argument", func() {
-		BeforeEach(func() {
-			removeRequest = &desc.RemovePresentationV1Request{}
-			removeResponse, err = server.RemovePresentationV1(ctx, removeRequest)
-		})
+	Context("when a client removes the presentation unsuccessfully because of an invalid argument", func() {
+		for i := 0; i < n; i++ {
+			var (
+				err      error
+				request  *desc.RemovePresentationV1Request
+				response *desc.RemovePresentationV1Response
+			)
 
-		It("should be an error", func() {
-			Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
-		})
+			BeforeEach(func() {
+				request = &desc.RemovePresentationV1Request{
+					PresentationId: 0,
+				}
+				response, err = server.RemovePresentationV1(ctx, request)
+			})
+
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return an invalid argument error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.InvalidArgument))
+			})
+		}
 	})
 
-	Context("no database connecting", func() {
-		var id uint64 = 1
+	Context("when a client removes the presentation unsuccessfully because of a database connection error", func() {
+		for _, presentation := range presentations {
+			presentation := presentation
+			var (
+				err      error
+				request  *desc.RemovePresentationV1Request
+				response *desc.RemovePresentationV1Response
+			)
 
-		BeforeEach(func() {
-			removeRequest = &desc.RemovePresentationV1Request{PresentationId: id}
+			BeforeEach(func() {
+				request = &desc.RemovePresentationV1Request{
+					PresentationId: presentation.ID,
+				}
 
-			mock.ExpectExec("DELETE FROM presentation").
-				WithArgs(removeRequest.PresentationId).WillReturnError(errors.New("bad connection"))
+				mock.ExpectExec("DELETE FROM presentation").
+					WithArgs(request.PresentationId).
+					WillReturnError(errDatabaseConnection)
 
-			removeResponse, err = server.RemovePresentationV1(ctx, removeRequest)
-		})
+				response, err = server.RemovePresentationV1(ctx, request)
+			})
 
-		It("should be an error", func() {
-			Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
-		})
+			It("should return an empty response", func() {
+				Expect(response).Should(BeNil())
+			})
+
+			It("should return a resource exhausted error", func() {
+				Expect(status.Convert(err).Code()).Should(Equal(codes.ResourceExhausted))
+			})
+		}
 	})
 })
+
+func min(lhs int, rhs int) int {
+	if lhs <= rhs {
+		return lhs
+	}
+
+	return rhs
+}
