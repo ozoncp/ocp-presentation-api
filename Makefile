@@ -109,7 +109,7 @@ coverage:
 
 .PHONY: clean
 clean:
-		rm -rf bin pkg swagger vendor.protogen internal/mock coverage.out
+		rm -rf bin pkg swagger vendor.protogen internal/ocp-presentation-api/mock internal/ocp-slide-api/mock coverage.out
 
 .PHONY: tidy
 tidy:

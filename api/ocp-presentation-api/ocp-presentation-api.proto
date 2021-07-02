@@ -115,16 +115,16 @@ message RemovePresentationV1Response {
 ///////////////////////////////////////////////////////////////////////////////
 
 message NewPresentation {
-	uint64 user_id = 1 [(validate.rules).uint64.gte = 1];
-	uint64 lesson_id = 2 [(validate.rules).uint64.gte = 1];
+	uint64 lesson_id = 1 [(validate.rules).uint64.gte = 1];
+	uint64 user_id = 2 [(validate.rules).uint64.gte = 1];
 	string name = 3 [(validate.rules).string = {max_len: 256}];
 	string description = 4 [(validate.rules).string = {max_len: 1024}];
 }
 
 message Presentation {
 	uint64 id = 1 [(validate.rules).uint64.gte = 1];
-	uint64 user_id = 2 [(validate.rules).uint64.gte = 1];
-	uint64 lesson_id = 3 [(validate.rules).uint64.gte = 1];
+	uint64 lesson_id = 2 [(validate.rules).uint64.gte = 1];
+	uint64 user_id = 3 [(validate.rules).uint64.gte = 1];
 	string name = 4 [(validate.rules).string = {max_len: 256}];
 	string description = 5 [(validate.rules).string = {max_len: 1024}];
 }

@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/golang/mock/gomock"
 	"github.com/ozoncp/ocp-presentation-api/internal/ocp-slide-api/model"
 	"github.com/ozoncp/ocp-presentation-api/internal/ocp-slide-api/repo"
 
@@ -20,12 +19,15 @@ import (
 
 var errDatabaseConnection = errors.New("error establishing a database connection")
 
-var n = 10
 var _ = Describe("Repo", func() {
+	const (
+		n              = 10
+		numberOfFields = 3
+	)
+
 	var (
 		err error
 
-		ctrl *gomock.Controller
 		mock sqlmock.Sqlmock
 
 		db     *sql.DB
@@ -42,15 +44,13 @@ var _ = Describe("Repo", func() {
 			{ID: 5, PresentationID: 5},
 			{ID: 6, PresentationID: 6},
 			{ID: 7, PresentationID: 7},
-			{ID: 8, PresentationID: 9},
+			{ID: 8, PresentationID: 8},
 			{ID: 9, PresentationID: 9},
 			{ID: 10, PresentationID: 10},
 		}
 	)
 
 	BeforeEach(func() {
-		ctrl = gomock.NewController(GinkgoT())
-
 		db, mock, err = sqlmock.New()
 		Expect(err).Should(BeNil())
 		sqlxDB = sqlx.NewDb(db, "sqlmock")
@@ -66,20 +66,15 @@ var _ = Describe("Repo", func() {
 		mock.ExpectClose()
 		err = db.Close()
 		Expect(err).Should(BeNil())
-
-		ctrl.Finish()
 	})
 
 	// ////////////////////////////////////////////////////////////////////////
 
 	Context("when the repository saves the new slide successfully", func() {
-		var (
-			mockID uint64
-			id     uint64
-		)
-
 		for i, slide := range slides {
-			mockID = uint64(i)
+			mockID := uint64(i)
+			slide := slide
+			var id uint64
 
 			BeforeEach(func() {
 				rows := sqlmock.NewRows([]string{
@@ -111,9 +106,10 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository fails to save the new slide", func() {
-		var id uint64
-
 		for _, slide := range slides {
+			slide := slide
+			var id uint64
+
 			BeforeEach(func() {
 				query := mock.ExpectQuery("INSERT INTO slide")
 				query.WithArgs(
@@ -137,32 +133,32 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository saves the new slides successfully", func() {
-		var (
-			lastInsertID             int64
-			rowsAffected             int64
-			numberOfTheCreatedSlides int64
-		)
-
-		BeforeEach(func() {
-			rowsAffected = int64(len(slides))
-
-			values := make([]driver.Value, 3*rowsAffected)
-			for i, newSlide := range slides {
-				lastInsertID = int64(newSlide.ID)
-
-				values[3*i] = newSlide.PresentationID
-				values[3*i+1] = newSlide.Number
-				values[3*i+2] = newSlide.Type
-			}
-
-			mock.ExpectExec("INSERT INTO slide").
-				WithArgs(values...).
-				WillReturnResult(sqlmock.NewResult(lastInsertID, rowsAffected))
-
-			numberOfTheCreatedSlides, err = repository.MultiCreateSlides(ctx, slides)
-		})
-
 		for i := 0; i < n; i++ {
+			var (
+				lastInsertID             int64
+				rowsAffected             int64
+				numberOfTheCreatedSlides int64
+			)
+
+			BeforeEach(func() {
+				rowsAffected = int64(len(slides))
+
+				values := make([]driver.Value, numberOfFields*rowsAffected)
+				for i, slide := range slides {
+					lastInsertID = int64(slide.ID)
+
+					values[numberOfFields*i] = slide.PresentationID
+					values[numberOfFields*i+1] = slide.Number
+					values[numberOfFields*i+2] = slide.Type
+				}
+
+				mock.ExpectExec("INSERT INTO slide").
+					WithArgs(values...).
+					WillReturnResult(sqlmock.NewResult(lastInsertID, rowsAffected))
+
+				numberOfTheCreatedSlides, err = repository.MultiCreateSlides(ctx, slides)
+			})
+
 			It("should return the number of the created slides correctly", func() {
 				Expect(numberOfTheCreatedSlides).To(Equal(rowsAffected))
 			})
@@ -174,27 +170,27 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository fails to save the new slides", func() {
-		var (
-			rowsAffected             int64
-			numberOfTheCreatedSlides int64
-		)
-
-		BeforeEach(func() {
-			rowsAffected = int64(len(slides))
-
-			values := make([]driver.Value, 3*rowsAffected)
-			for i, newSlide := range slides {
-				values[3*i] = newSlide.PresentationID
-				values[3*i+1] = newSlide.Number
-				values[3*i+2] = newSlide.Type
-			}
-
-			mock.ExpectExec("INSERT INTO slide").WithArgs(values...).WillReturnError(errDatabaseConnection)
-
-			numberOfTheCreatedSlides, err = repository.MultiCreateSlides(ctx, slides)
-		})
-
 		for i := 0; i < n; i++ {
+			var (
+				rowsAffected             int64
+				numberOfTheCreatedSlides int64
+			)
+
+			BeforeEach(func() {
+				rowsAffected = int64(len(slides))
+
+				values := make([]driver.Value, numberOfFields*rowsAffected)
+				for i, slide := range slides {
+					values[numberOfFields*i] = slide.PresentationID
+					values[numberOfFields*i+1] = slide.Number
+					values[numberOfFields*i+2] = slide.Type
+				}
+
+				mock.ExpectExec("INSERT INTO slide").WithArgs(values...).WillReturnError(errDatabaseConnection)
+
+				numberOfTheCreatedSlides, err = repository.MultiCreateSlides(ctx, slides)
+			})
+
 			It("should return the zero-value for the number of the created slides", func() {
 				Expect(numberOfTheCreatedSlides).To(BeZero())
 			})
@@ -208,9 +204,10 @@ var _ = Describe("Repo", func() {
 	// ////////////////////////////////////////////////////////////////////////
 
 	Context("when the repository updates the slide successfully", func() {
-		var found bool
-
 		for _, slide := range slides {
+			slide := slide
+			var found bool
+
 			BeforeEach(func() {
 				query := mock.ExpectExec("UPDATE slide SET")
 				query.WithArgs(
@@ -224,22 +221,21 @@ var _ = Describe("Repo", func() {
 				found, err = repository.UpdateSlide(ctx, slide)
 			})
 
-			for i := 0; i < n; i++ {
-				It("should return true", func() {
-					Expect(found).Should(BeTrue())
-				})
+			It("should return true", func() {
+				Expect(found).Should(BeTrue())
+			})
 
-				It("should not be an error", func() {
-					Expect(err).Should(BeNil())
-				})
-			}
+			It("should not be an error", func() {
+				Expect(err).Should(BeNil())
+			})
 		}
 	})
 
 	Context("when the repository fails to update the slide", func() {
-		var found bool
-
 		for _, slide := range slides {
+			slide := slide
+			var found bool
+
 			BeforeEach(func() {
 				query := mock.ExpectExec("UPDATE slide SET")
 				query.WithArgs(
@@ -264,9 +260,10 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository updates the slide unsuccessfully", func() {
-		var found bool
-
 		for _, slide := range slides {
+			slide := slide
+			var found bool
+
 			BeforeEach(func() {
 				query := mock.ExpectExec("UPDATE slide SET")
 				query.WithArgs(
@@ -293,9 +290,10 @@ var _ = Describe("Repo", func() {
 	// ////////////////////////////////////////////////////////////////////////
 
 	Context("when the repository describes the slide successfully", func() {
-		var result *model.Slide
-
 		for _, slide := range slides {
+			slide := slide
+			var result *model.Slide
+
 			BeforeEach(func() {
 				rows := sqlmock.NewRows([]string{
 					"id",
@@ -331,9 +329,10 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository fails to describe the slide", func() {
-		var result *model.Slide
-
 		for _, slide := range slides {
+			slide := slide
+			var result *model.Slide
+
 			BeforeEach(func() {
 				rows := sqlmock.NewRows([]string{
 					"id",
@@ -369,9 +368,10 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository describes the slide unsuccessfully", func() {
-		var result *model.Slide
-
 		for _, slide := range slides {
+			slide := slide
+			var result *model.Slide
+
 			BeforeEach(func() {
 				query := mock.ExpectQuery("SELECT id, presentation_id, number, type FROM slide WHERE")
 				query.WithArgs(
@@ -395,14 +395,15 @@ var _ = Describe("Repo", func() {
 	// ////////////////////////////////////////////////////////////////////////
 
 	Context("when the repository returns the list of slides successfully", func() {
-		var (
-			maxLimit uint64 = 20
-			offset   uint64 = 0
-
-			result []model.Slide
+		const (
+			maxLimit = 15
+			offset   = 0
 		)
 
-		for limit := uint64(1); limit <= maxLimit; limit++ {
+		for limit := 1; limit <= maxLimit; limit++ {
+			limit := limit
+			var result []model.Slide
+
 			BeforeEach(func() {
 				rows := sqlmock.NewRows([]string{
 					"id",
@@ -411,7 +412,11 @@ var _ = Describe("Repo", func() {
 					"type",
 				})
 
-				for _, slide := range slides {
+				for i, slide := range slides {
+					if i == limit {
+						break
+					}
+
 					rows.AddRow(
 						slide.ID,
 						slide.PresentationID,
@@ -421,14 +426,15 @@ var _ = Describe("Repo", func() {
 				}
 
 				query := fmt.Sprintf("SELECT id, presentation_id, number, type FROM slide LIMIT %d OFFSET %d",
-					limit, offset)
+					limit,
+					offset)
 				mock.ExpectQuery(query).WillReturnRows(rows)
 
-				result, err = repository.ListSlides(ctx, limit, offset)
+				result, err = repository.ListSlides(ctx, uint64(limit), offset)
 			})
 
 			It("should populate the slice correctly", func() {
-				Expect(uint64(len(result))).Should(BeEquivalentTo(min(limit, uint64(len(result)))))
+				Expect(len(result)).Should(BeEquivalentTo(min(limit, len(result))))
 			})
 
 			It("should not be an error", func() {
@@ -438,38 +444,24 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository fails to return the list of slides", func() {
-		var (
-			limit  uint64 = 10
-			offset uint64 = 0
-
-			result []model.Slide
+		const (
+			limit  = 10
+			offset = 0
 		)
 
-		BeforeEach(func() {
-			rows := sqlmock.NewRows([]string{
-				"id",
-				"presentation_id",
-				"number",
-				"type",
+		for i := 0; i < n; i++ {
+			var result []model.Slide
+
+			BeforeEach(func() {
+				query := fmt.Sprintf(
+					"SELECT id, presentation_id, number, type FROM slide LIMIT %d OFFSET %d",
+					limit,
+					offset)
+				mock.ExpectQuery(query).WillReturnError(errDatabaseConnection)
+
+				result, err = repository.ListSlides(ctx, limit, offset)
 			})
 
-			for _, slide := range slides {
-				rows.AddRow(
-					slide.ID,
-					slide.PresentationID,
-					slide.Number,
-					slide.Type,
-				)
-			}
-
-			query := fmt.Sprintf("SELECT id, presentation_id, number, type FROM slide LIMIT %d OFFSET %d",
-				limit, offset)
-			mock.ExpectQuery(query).WillReturnError(errDatabaseConnection)
-
-			result, err = repository.ListSlides(ctx, limit, offset)
-		})
-
-		for i := 0; i < n; i++ {
 			It("should return the empty list of the slides", func() {
 				Expect(result).Should(BeNil())
 			})
@@ -481,23 +473,24 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository returns the list of slides unsuccessfully", func() {
-		var (
-			limit  uint64 = 10
-			offset uint64 = 0
-
-			result []model.Slide
+		const (
+			limit  = 10
+			offset = 0
 		)
 
-		BeforeEach(func() {
-			query := mock.ExpectQuery(
-				fmt.Sprintf("SELECT id, presentation_id, number, type FROM slide LIMIT %d OFFSET %d",
-					limit, offset))
-			query.WillReturnError(sql.ErrNoRows)
-
-			result, err = repository.ListSlides(ctx, limit, offset)
-		})
-
 		for i := 0; i < n; i++ {
+			var result []model.Slide
+
+			BeforeEach(func() {
+				query := mock.ExpectQuery(fmt.Sprintf(
+					"SELECT id, presentation_id, number, type FROM slide LIMIT %d OFFSET %d",
+					limit,
+					offset))
+				query.WillReturnError(sql.ErrNoRows)
+
+				result, err = repository.ListSlides(ctx, limit, offset)
+			})
+
 			It("should return the empty list of slides", func() {
 				Expect(result).Should(BeEmpty())
 			})
@@ -511,9 +504,10 @@ var _ = Describe("Repo", func() {
 	// ////////////////////////////////////////////////////////////////////////
 
 	Context("when the repository removes the slide successfully", func() {
-		var found bool
-
 		for _, slide := range slides {
+			slide := slide
+			var found bool
+
 			BeforeEach(func() {
 				query := mock.ExpectExec("DELETE FROM slide WHERE")
 				query.WithArgs(
@@ -535,9 +529,10 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository fails to remove the slide", func() {
-		var found bool
-
 		for _, slide := range slides {
+			slide := slide
+			var found bool
+
 			BeforeEach(func() {
 				query := mock.ExpectExec("DELETE FROM slide WHERE")
 				query.WithArgs(
@@ -559,9 +554,10 @@ var _ = Describe("Repo", func() {
 	})
 
 	Context("when the repository removes the slide unsuccessfully", func() {
-		var found bool
-
 		for _, slide := range slides {
+			slide := slide
+			var found bool
+
 			BeforeEach(func() {
 				query := mock.ExpectExec("DELETE FROM slide WHERE")
 				query.WithArgs(
@@ -583,7 +579,7 @@ var _ = Describe("Repo", func() {
 	})
 })
 
-func min(lhs uint64, rhs uint64) uint64 {
+func min(lhs int, rhs int) int {
 	if lhs <= rhs {
 		return lhs
 	}
